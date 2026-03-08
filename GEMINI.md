@@ -1,6 +1,6 @@
-# AGENTS.md
+# GEMINI.md
 
-本入口文件服务工具：Codex、Kiro、Kimi Code、OpenCode
+本入口文件服务工具：Gemini CLI
 
 ## 统一约束
 - Agent 权威映射：`specs/meta/agents/agents.md`
