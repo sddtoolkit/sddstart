@@ -1,41 +1,41 @@
 """
-代码质量检查器，提供轻量静态质量信号。
+Code quality checker, providing lightweight static quality signals.
 
-## 规范引用
+## Specification References
 
-本检查器实现以下规范的校验逻辑：
+This checker implements the validation logic for the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 编码规范 | S02 | 代码组织、日志与可观测性 |
-| 质量保证 | S04 | 代码评审 |
-| 运营韧性 | S09 | 可观测性基线 |
+| Specification Document | Reference ID | Applicable Section |
+|------------------------|--------------|--------------------|
+| Coding Standards       | S02          | Code Organization, Logging, and Observability |
+| Quality Assurance      | S04          | Code Review        |
+| Operational Resilience | S09          | Observability Baseline |
 
-### S02-编码规范 要求
-- 模块边界必须清晰，职责单一
-- 公共接口必须有文档或注释说明
+### S02-Coding Standards Requirements
+- Module boundaries must be clear, with single responsibility.
+- Public interfaces must be documented or explained with comments.
 
-### S04-质量保证 要求
-- 关键模块必须评审通过方可合并
-- 评审必须记录结论与问题清单
+### S04-Quality Assurance Requirements
+- Critical modules must pass review before merging.
+- Reviews must record conclusions and lists of issues.
 
-### S09-运营韧性 要求
-- 代码实现必须提供关键路径埋点
-- 保持可关联请求标识
+### S09-Operational Resilience Requirements
+- Code implementation must provide key path instrumentation.
+- Maintain correlatable request identifiers.
 
-## 实现映射
+## Implementation Mapping
 
-| 常量/方法 | 规范要求 | 规范章节 |
-|-----------|----------|----------|
-| `MAX_WARN_LINE` | 行长告警阈值 | S02-代码风格 |
-| `MAX_ERROR_LINE` | 行长错误阈值 | S02-代码风格 |
-| `MAX_ERROR_FILE_LINES` | 文件长度阈值 | S02-代码组织 |
-| `TODO_MARK_PATTERN` | TODO/FIXME 检测 | S04-评审检查 |
+| Constant/Method | Spec Requirement | Spec Section |
+|-----------------|------------------|--------------|
+| `MAX_WARN_LINE` | Line length warning threshold | S02-Code Style |
+| `MAX_ERROR_LINE` | Line length error threshold | S02-Code Style |
+| `MAX_ERROR_FILE_LINES` | File length threshold | S02-Code Organization |
+| `TODO_MARK_PATTERN` | TODO/FIXME detection | S04-Review Check |
 
-参见：
-- specs/standards/S02-编码规范.md
-- specs/standards/S04-质量保证.md
-- specs/standards/S09-运营韧性.md
+See also:
+- specs/standards/S02-Coding-Standards.md
+- specs/standards/S04-Quality-Assurance.md
+- specs/standards/S09-Operational-Resilience.md
 """
 
 from __future__ import annotations
@@ -47,37 +47,37 @@ from sdd.io import read_text_safe
 from sdd.log import log_error, log_info, log_warning
 
 # ============================================================================
-# 代码质量阈值
+# Code Quality Thresholds
 # ============================================================================
-# 规范引用：S02-编码规范
+# Spec Ref: S02-Coding Standards
 
-# 支持的代码文件后缀
+# Supported code file suffixes
 CODE_SUFFIXES = {".py", ".js", ".ts", ".go", ".rs", ".java", ".kt", ".c", ".cpp", ".h", ".hpp"}
 
-# 行长阈值（字符数）
-MAX_WARN_LINE = 120   # 超过此值告警
-MAX_ERROR_LINE = 200  # 超过此值错误
+# Line length thresholds (number of characters)
+MAX_WARN_LINE = 120   # Warning if exceeded
+MAX_ERROR_LINE = 200  # Error if exceeded
 
-# 文件行数阈值
-MAX_ERROR_FILE_LINES = 2000  # 超过此值错误
+# File line count threshold
+MAX_ERROR_FILE_LINES = 2000  # Error if exceeded
 
-# TODO/FIXME 标记模式
+# TODO/FIXME marker patterns
 TODO_MARK_PATTERN = re.compile(r"\b(?:TODO|FIXME)\b")
 
-# C 风格注释语言后缀
+# C-style comment language suffixes
 C_STYLE_SUFFIXES = {".js", ".ts", ".go", ".rs", ".java", ".kt", ".c", ".cpp", ".h", ".hpp"}
 
 
 class QualityChecker:
-    """执行代码长度、行长与 TODO/FIXME 质量检查。"""
+    """Execute code length, line length, and TODO/FIXME quality checks."""
 
     def __init__(self, repo_root: Path) -> None:
-        """初始化质量检查器。"""
+        """Initialize the quality checker."""
         self.repo_root = repo_root
 
     @staticmethod
     def extract_c_style_comment_fragment(line: str, in_block: bool) -> tuple[str, bool]:
-        """提取 C 风格注释文本片段，并返回是否仍处于块注释中。"""
+        """Extract C-style comment text fragments and return whether still within a block comment."""
         comment_parts: list[str] = []
         cursor = 0
 
@@ -113,7 +113,7 @@ class QualityChecker:
 
     @staticmethod
     def check_todo_marker_in_comment(line: str, suffix: str, in_block: bool) -> tuple[bool, bool]:
-        """判断当前行注释中是否包含 TODO/FIXME 标记。"""
+        """Determine if the current line's comments contain TODO/FIXME markers."""
         if suffix == ".py":
             hash_idx = line.find("#")
             comment_fragment = line[hash_idx + 1 :] if hash_idx != -1 else ""
@@ -126,15 +126,15 @@ class QualityChecker:
         return False, in_block
 
     def collect_code_roots(self) -> list[Path]:
-        """收集需要执行质量检查的常见代码目录。"""
+        """Collect common code directories that require quality checks."""
         roots = [self.repo_root / name for name in ("src", "app", "lib", "services")]
         return [p for p in roots if p.is_dir()]
 
     def running(self) -> int:
-        """执行代码质量检查。"""
+        """Execute the code quality check."""
         roots = self.collect_code_roots()
         if not roots:
-            log_info("未发现代码目录（src/app/lib/services），跳过质量检查")
+            log_info("No code directories found (src/app/lib/services), skipping quality check")
             return 0
 
         warnings: list[str] = []
@@ -149,7 +149,7 @@ class QualityChecker:
                 lines = text.splitlines()
 
                 if len(lines) > MAX_ERROR_FILE_LINES:
-                    errors.append(f"{path}: 文件过长（{len(lines)} 行）")
+                    errors.append(f"{path}: file too long ({len(lines)} lines)")
 
                 todo_count = 0
                 in_block_comment = False
@@ -163,43 +163,43 @@ class QualityChecker:
                         todo_count += 1
                     length = len(line)
                     if length > MAX_ERROR_LINE:
-                        errors.append(f"{path}:{idx} 行过长（{length}）")
+                        errors.append(f"{path}:{idx} line too long ({length})")
                     elif length > MAX_WARN_LINE:
-                        warnings.append(f"{path}:{idx} 行较长（{length}）")
+                        warnings.append(f"{path}:{idx} line is long ({length})")
 
                 if todo_count > 0:
-                    warnings.append(f"{path}: 存在 TODO/FIXME {todo_count} 处")
+                    warnings.append(f"{path}: {todo_count} TODO/FIXME markers found")
 
         if warnings:
-            log_warning("代码质量告警：")
+            log_warning("Code quality warnings:")
             for item in warnings:
                 log_warning(f"- {item}")
 
         if errors:
-            log_error("代码质量检查失败：")
+            log_error("Code quality check failed:")
             for item in errors:
                 log_error(f"- {item}")
             return 1
 
-        log_info("代码质量检查通过")
+        log_info("Code quality check passed")
         return 0
 
 
 def _extract_c_style_comment_fragment(line: str, in_block: bool) -> tuple[str, bool]:
-    """兼容函数入口：提取 C 风格注释文本片段。"""
+    """Compatibility function entry point: extract C-style comment text fragments."""
     return QualityChecker.extract_c_style_comment_fragment(line, in_block)
 
 
 def _check_todo_marker_in_comment(line: str, suffix: str, in_block: bool) -> tuple[bool, bool]:
-    """兼容函数入口：判断注释 TODO/FIXME。"""
+    """Compatibility function entry point: determine TODO/FIXME in comments."""
     return QualityChecker.check_todo_marker_in_comment(line, suffix, in_block)
 
 
 def _collecting_code_roots(repo_root: Path) -> list[Path]:
-    """兼容函数入口：收集代码目录。"""
+    """Compatibility function entry point: collect code directories."""
     return QualityChecker(repo_root).collect_code_roots()
 
 
 def check_code_quality(repo_root: Path) -> int:
-    """兼容函数入口：执行代码质量检查。"""
+    """Compatibility function entry point: execute code quality check."""
     return QualityChecker(repo_root).running()

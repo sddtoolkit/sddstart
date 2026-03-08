@@ -1,4 +1,4 @@
-"""qualitychecker 注释解析边界测试。"""
+"""Tests for boundary conditions in qualitychecker comment parsing."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from sdd.checkers.qualitychecker import (  # noqa: E402
 
 
 class QualityCheckerTests(unittest.TestCase):
-    """覆盖 C 风格注释片段提取与 TODO 检测边界。"""
+    """Covers C-style comment fragment extraction and TODO detection boundaries."""
 
     def test_extracting_c_style_comment_fragment_inline_block(self) -> None:
         fragment, in_block = _extract_c_style_comment_fragment("const a = 1; /* TODO: fix */", False)

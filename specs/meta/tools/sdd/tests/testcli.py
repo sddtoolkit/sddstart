@@ -1,4 +1,4 @@
-"""CLI 参数与路径安全测试。"""
+"""Tests for CLI arguments and path security."""
 
 from __future__ import annotations
 
@@ -17,14 +17,14 @@ from sdd.handlers import commands as command_handlers  # noqa: E402
 
 
 class CliValidationTests(unittest.TestCase):
-    """覆盖参数校验与路径越界防护。"""
+    """Covers argument validation and path traversal protection."""
 
     def test_validating_slug_value(self) -> None:
         self.assertEqual(cli.validate_slug("Auth Module"), "auth-module")
         self.assertIsNone(cli.validate_slug("!!!"))
 
     def test_resolve_safe_path(self) -> None:
-        inside_path = cli.resolve_safe_path("govs/G01-治理与流程.md")
+        inside_path = cli.resolve_safe_path("govs/G01-governance-and-process.md")
         assert inside_path is not None
         self.assertTrue(inside_path.is_absolute())
 
@@ -56,9 +56,9 @@ class CliValidationTests(unittest.TestCase):
             [
                 "resolve-agent-dispatch",
                 "--task",
-                "补齐发布门禁",
+                "complete release gates",
                 "--stage",
-                "发布",
+                "release",
                 "--skills",
                 "generate-changelog-release-skill,maintain-runbook-skill",
                 "--json",
@@ -97,7 +97,7 @@ class CliValidationTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         self.assertEqual(copy_template.call_args.args[0], "templates/design.template.md")
-        self.assertRegex(copy_template.call_args.args[1], r"^2-designs/DS-20101-api-gateway设计\.md$")
+        self.assertRegex(copy_template.call_args.args[1], r"^2-designs/DS-20101-api-gateway-design\.md$")
 
 
 if __name__ == "__main__":

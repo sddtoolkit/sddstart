@@ -1,9 +1,9 @@
 """
-SDD CLI 通用辅助函数。
+Common utility functions for SDD CLI.
 
 [SDD Traceability]
-- Policy: G01 (治理与流程)
-- Standard: S01 (文档编码规范)
+- Policy: G01 (Governance and Process)
+- Standard: S01 (Document Coding Standards)
 """
 
 from __future__ import annotations
@@ -25,15 +25,15 @@ from sdd.config import (
 from sdd.io import read_text_safe, check_file_integrity
 from sdd.log import log_error, log_info
 
-# 有效的文档编号前缀
+# Valid document ID prefixes
 VALID_DOC_PREFIXES = ['RQ', 'DS', 'TK', 'ADR', 'G', 'S']
 
-# 规范引用：S03-文档规范 - 字段列表格式 `- 字段名: 值`
+# Spec Ref: S03-Documentation Standards - Bullet list format: - Field Name: Value
 BULLET_FIELD_PATTERN = re.compile(r"^\s*-\s+([^:：]+?)\s*[:：]\s*(.*?)\s*$")
 
 
 def parse_bullet_list(lines: Sequence[str]) -> list[tuple[str, str]]:
-    """解析 Markdown 章节中的列表字段。 Spec Ref: S03-3.1"""
+    """Parse list fields in a Markdown section. Spec Ref: S03-3.1"""
     fields: list[tuple[str, str]] = []
     for raw in lines:
         match = BULLET_FIELD_PATTERN.match(raw)
@@ -46,7 +46,7 @@ def parse_bullet_list(lines: Sequence[str]) -> list[tuple[str, str]]:
 
 
 def extract_md_section(content: str, heading: str) -> List[str]:
-    """提取指定二级标题 (##) 下的所有行。"""
+    """Extract all lines under a specific level 2 heading (##)."""
     lines = content.splitlines()
     section_lines = []
     in_section = False
@@ -65,7 +65,7 @@ def extract_md_section(content: str, heading: str) -> List[str]:
 
 
 def copy_template(template_rel: str, target_rel: str) -> bool:
-    """从 templates/ 拷贝模板到目标位置。"""
+    """Copy a template from templates/ to the target location."""
     template_path = SPECS_DIR / template_rel
     target_path = SPECS_DIR / target_rel
     if not template_path.exists():
@@ -77,7 +77,7 @@ def copy_template(template_rel: str, target_rel: str) -> bool:
 
 
 def write_file_safe(path: Path, content: str) -> bool:
-    """仅当文件不存在时写入内容。"""
+    """Write content only if the file does not exist."""
     if path.exists():
         return False
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +86,7 @@ def write_file_safe(path: Path, content: str) -> bool:
 
 
 def ensure_gov_metadata(path: Path) -> None:
-    """确保治理文档包含必需的元信息头。"""
+    """Ensure governance documents contain the required metadata header."""
     if not path.exists():
         return
     content = read_text_safe(path)
@@ -96,17 +96,17 @@ def ensure_gov_metadata(path: Path) -> None:
 
 
 def get_current_date_slug() -> str:
-    """获取 YYYYMMDD 格式的日期。"""
+    """Get date in YYYYMMDD format."""
     return datetime.now().strftime(DATE_COMPACT_FORMAT)
 
 
 def get_yyww() -> str:
-    """获取当前年份后两位 + 周数 (e.g. 2610)。"""
+    """Get current last two digits of the year + week number (e.g., 2610)."""
     return datetime.now().strftime("%y%U")
 
 
 def get_next_nn(ccc: str, existing_ids: set[str]) -> str:
-    """计算下一个可用的 NN 码。"""
+    """Calculate the next available NN code."""
     for i in range(1, 100):
         nn = f"{i:02d}"
         if f"{ccc}{nn}" not in [id_str.replace("-", "")[-5:] for id_str in existing_ids]:
@@ -115,7 +115,7 @@ def get_next_nn(ccc: str, existing_ids: set[str]) -> str:
 
 
 def normalize_id(raw: str, prefix: str) -> str:
-    """归一化标识符为大写标准格式。 Spec Ref: S01-2.1"""
+    """Normalize identifier to uppercase standard format. Spec Ref: S01-2.1"""
     prefix_upper = prefix.upper()
     prefix_lower = prefix.lower()
     if raw.lower().startswith(prefix_lower + "-"):
@@ -125,7 +125,7 @@ def normalize_id(raw: str, prefix: str) -> str:
 
 
 def resolve_spec_path(ref_id: str) -> Tuple[Optional[Path], Optional[str], List[Path]]:
-    """通过引用编号定位物理文件路径。 Spec Ref: S01-7.2"""
+    """Locate physical file path via reference ID. Spec Ref: S01-7.2"""
     prefix = ref_id.split('-')[0] if '-' in ref_id else ref_id
     if prefix not in VALID_DOC_PREFIXES:
         return None, f"Invalid prefix: {prefix}", []
@@ -144,12 +144,12 @@ def resolve_spec_path(ref_id: str) -> Tuple[Optional[Path], Optional[str], List[
 
 
 def normalize_md_token(text: str) -> str:
-    """归一化 Markdown 标签文本。"""
+    """Normalize Markdown token text."""
     return text.strip().lower().replace("：", "").replace(":", "").replace("*", "").replace("`", "")
 
 
 def read_first_heading(path: Path) -> str:
-    """获取 Markdown 文档的第一个一级标题。"""
+    """Get the first level 1 heading of a Markdown document."""
     if not path.exists(): return ""
     for line in read_text_safe(path).splitlines():
         if line.startswith("# "): return line[2:].strip()
@@ -157,12 +157,12 @@ def read_first_heading(path: Path) -> str:
 
 
 def list_top_directories() -> List[str]:
-    """列出 specs/ 下的所有顶层受控目录。"""
+    """List all top-level controlled directories under specs/."""
     return [d.name for d in SPECS_DIR.iterdir() if d.is_dir() and not d.name.startswith(".")]
 
 
 def list_files_depth_two(base_dir: Path) -> List[Path]:
-    """在指定目录下递归搜索深度为 2 的所有文件。"""
+    """Recursively search for all files up to depth 2 in the specified directory."""
     files = []
     for p in base_dir.rglob("*"):
         if p.is_file() and len(p.relative_to(base_dir).parts) <= 2:
@@ -172,10 +172,10 @@ def list_files_depth_two(base_dir: Path) -> List[Path]:
 
 def resolve_safe_path(rel_path: str | None) -> Optional[Path]:
     """
-    将相对路径解析为绝对路径，并确保其位于 specs/ 目录内。
+    Resolve a relative path to an absolute path and ensure it is within the specs/ directory.
     
     Returns:
-        Path 对象或 None（若路径非法或越界）
+        Path object or None (if path is invalid or out of bounds)
     """
     if not rel_path: return None
     try:
@@ -188,7 +188,7 @@ def resolve_safe_path(rel_path: str | None) -> Optional[Path]:
 
 
 def check_path_exists(path: Path, subject: str) -> int:
-    """检查路径是否存在并报错。"""
+    """Check if the path exists and log an error if not."""
     passed, error = check_file_integrity(path, subject)
     if not passed:
         log_error(error)
@@ -197,18 +197,18 @@ def check_path_exists(path: Path, subject: str) -> int:
 
 
 def validate_slug(raw: str) -> Optional[str]:
-    """校验并清洗 Slug 字符串。"""
+    """Validate and sanitize the slug string."""
     cleaned = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fa5]+", "-", raw).strip("-").lower()
     return cleaned if cleaned else None
 
 
 def validate_semver(version: str) -> bool:
-    """验证语义化版本格式。"""
+    """Validate semantic version format."""
     return bool(SEMVER_PATTERN.match(version))
 
 
 def count_specs_by_dir(specs_dir: Path) -> dict[str, int]:
-    """按顶层目录统计 Markdown 文件数量。"""
+    """Count Markdown files by top-level directory."""
     stats = {}
     for d in specs_dir.iterdir():
         if d.is_dir() and not d.name.startswith("."):
@@ -217,11 +217,11 @@ def count_specs_by_dir(specs_dir: Path) -> dict[str, int]:
 
 
 def extract_registered_ids(index_text: str) -> set[str]:
-    """从 index.md 提取已登记的文件路径。"""
+    """Extract registered file paths from index.md."""
     return set(re.findall(r"`([^`]+\.md)`", index_text))
 
 
 def check_structured_bullets(path: Path, section: str, labels: Sequence[str]) -> list[str]:
-    """校验指定章节的 Bullet 列表是否完备。"""
+    """Validate whether the bullet list in a specific section is complete."""
     from sdd.validators.sectionvalidator import check_required_nonempty_bullets
     return check_required_nonempty_bullets(path, section, labels)

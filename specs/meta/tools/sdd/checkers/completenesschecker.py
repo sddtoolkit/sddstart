@@ -1,35 +1,35 @@
 """
-完整性检查器，验证追溯矩阵链路是否满足要求。
+Completeness checker, verifying whether the traceability matrix links meet requirements.
 
-## 规范引用
+## Specification References
 
-本检查器实现以下规范的校验逻辑：
+This checker implements the validation logic for the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 质量保证 | S04 | 追溯完整性 |
-| 交付控制 | S05 | 交付前检查 |
+| Specification Document | Reference ID | Applicable Section |
+|------------------------|--------------|--------------------|
+| Quality Assurance      | S04          | Traceability Integrity |
+| Delivery Control       | S05          | Pre-delivery Check |
 
-### S04-质量保证 要求
-- 需求必须关联设计和测试
-- 追溯链路必须完整且可验证
-- 缺失关联应作为错误报告
+### S04-Quality Assurance Requirements
+- Requirements must be linked to designs and tests.
+- Traceability links must be complete and verifiable.
+- Missing links should be reported as errors.
 
-### S05-交付控制 要求
-- 交付前必须通过完整性检查
-- REQ 必须关联设计、任务、测试
+### S05-Delivery Control Requirements
+- Integrity check must be passed before delivery.
+- REQ must be linked to designs, tasks, and tests.
 
-## 实现映射
+## Implementation Mapping
 
-| 方法 | 规范要求 | 规范章节 |
-|------|----------|----------|
-| `REQUIRED_LINKS` | 必需的追溯链路 | S04-追溯完整性 |
-| `_load_matrix()` | 加载追溯矩阵 | S04-追溯管理 |
-| `running()` | 执行完整性校验 | S05-交付检查 |
+| Method | Spec Requirement | Spec Section |
+|--------|------------------|--------------|
+| `REQUIRED_LINKS` | Required traceability links | S04-Traceability Integrity |
+| `_load_matrix()` | Load traceability matrix | S04-Traceability Management |
+| `running()` | Execute completeness validation | S05-Delivery Check |
 
-参见：
-- specs/standards/S04-质量保证.md
-- specs/standards/S05-交付控制.md
+See also:
+- specs/standards/S04-Quality-Assurance.md
+- specs/standards/S05-Delivery-Control.md
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ from sdd.utils import normalize_id
 
 
 class TraceabilityLinks(TypedDict, total=False):
-    """追溯矩阵单个 REQ 条目的链路字段。"""
+    """Link fields for a single REQ entry in the traceability matrix."""
 
     adrs: list[object]
     designs: list[object]
@@ -58,27 +58,27 @@ TraceabilityMatrix = dict[str, TraceabilityLinks | object]
 
 class CompletenessChecker:
     """
-    校验追溯矩阵中 REQ 链路完整性。
+    Validate the completeness of REQ links in the traceability matrix.
 
-    规范引用：
-    - S04 质量保证：追溯完整性要求
-    - S05 交付控制：交付前检查
+    Spec Ref:
+    - S04 Quality Assurance: Traceability integrity requirements
+    - S05 Delivery Control: Pre-delivery checks
 
-    检查规则：
-    1. 每个 REQ 必须关联设计（designs）
-    2. 每个 REQ 必须关联任务（tasks）
-    3. 每个 REQ 必须关联测试（tests）
-    4. ADR 关联为可选，缺失时仅警告
+    Check Rules:
+    1. Each REQ must be linked to designs.
+    2. Each REQ must be linked to tasks.
+    3. Each REQ must be linked to tests.
+    4. ADR association is optional; a warning is issued if missing.
 
-    追溯标识格式：
-    - REQ: req-xxx
+    Traceability ID Format:
+    - REQ: rq-xxx
     - ADR: adr-xxx
-    - DSN: dsn-xxx
-    - TSK: tsk-xxx
+    - DSN: ds-xxx
+    - TSK: tk-xxx
     - TEST: test-xxx
     """
 
-    # 追溯标识正则模式
+    # Traceability ID regex patterns
     ID_PATTERNS = {
         "reqs": re.compile(r"\brq-[a-z0-9-]+\b"),
         "adrs": re.compile(r"\badr-[a-z0-9-]+\b"),
@@ -87,7 +87,7 @@ class CompletenessChecker:
         "tests": re.compile(r"\btest-[a-z0-9-]+\b"),
     }
 
-    # 追溯标识对应目录映射
+    # Directory mapping for traceability IDs
     DIRECTORY_BY_FIELD = {
         "reqs": "1-reqs",
         "adrs": "adrs",
@@ -96,38 +96,38 @@ class CompletenessChecker:
         "tests": "tests",
     }
 
-    # 规范引用：S04-追溯完整性 - REQ 必需的链路类型
+    # Spec Ref: S04-Traceability Integrity - Required link types for REQ
     REQUIRED_LINKS = (
-        ("designs", "设计"),
-        ("tasks", "任务"),
-        ("tests", "测试"),
-        ("implementations", "代码实现"),
+        ("designs", "Design"),
+        ("tasks", "Task"),
+        ("tests", "Test"),
+        ("implementations", "Implementation"),
     )
 
     def __init__(self, specs_dir: Path) -> None:
-        """初始化完整性检查器。"""
+        """Initialize the completeness checker."""
         self.specs_dir = specs_dir
 
     def _load_matrix(self) -> TraceabilityMatrix | None:
-        """读取并解析追溯矩阵 JSON。"""
+        """Read and parse the traceability matrix JSON."""
         trace_path = self.specs_dir / "meta/index/traceability.json"
         if not trace_path.exists():
-            log_error("缺少 traceability.json，请先运行 generate-traceability-matrix")
+            log_error("Missing traceability.json, please run generate-traceability-matrix first")
             return None
 
         try:
             matrix = json.loads(read_text_safe(trace_path))
         except (json.JSONDecodeError, OSError, UnicodeDecodeError) as exc:
-            log_error(f"追溯矩阵解析失败：{exc}")
+            log_error(f"Failed to parse traceability matrix: {exc}")
             return None
 
         if not isinstance(matrix, dict):
-            log_error("追溯矩阵格式错误：根节点必须为对象")
+            log_error("Traceability matrix format error: root node must be an object")
             return None
         return cast(TraceabilityMatrix, matrix)
 
     def _collecting_directory_identifiers(self, field: str) -> set[str]:
-        """从目标目录提取并归一化指定类别的追溯标识。"""
+        """Extract and normalize traceability identifiers of a specific category from the target directory."""
         directory = self.specs_dir / self.DIRECTORY_BY_FIELD[field]
         if not directory.exists():
             return set()
@@ -148,22 +148,22 @@ class CompletenessChecker:
         return identifiers
 
     def _collecting_existing_identifiers(self) -> dict[str, set[str]]:
-        """收集各类别（REQ/ADR/DSN/TSK/TEST）已落盘标识集合。"""
+        """Collect the set of existing identifiers for each category (REQ/ADR/DSN/TSK/TEST)."""
         ids = {field: self._collecting_directory_identifiers(field) for field in self.DIRECTORY_BY_FIELD}
-        # 代码实现没有对应的 specs 目录，我们假设在 traceability.json 中已记录即有效，
-        # 具体的有效性由 TraceabilityGenerator 的扫描逻辑保证。
+        # Implementations don't have a corresponding specs directory; we assume if they are recorded 
+        # in traceability.json, they are valid. Their validity is guaranteed by TraceabilityGenerator.
         ids["implementations"] = set() 
         return ids
 
     def running(self) -> int:
-        """执行完整性检查。"""
+        """Execute the completeness check."""
         matrix = self._load_matrix()
         if matrix is None:
             return 1
 
         if not matrix:
-            log_error("追溯矩阵为空：未发现可校验的 REQ 条目（req-*）")
-            log_error("请先在需求/设计/任务/测试文档中建立 REQ/DSN/TSK/TEST 追溯标识")
+            log_error("Traceability matrix is empty: no verifiable REQ entries (req-*) found")
+            log_error("Please establish REQ/DSN/TSK/TEST traceability identifiers in req/design/task/test documents first")
             return 1
 
         warnings: list[str] = []
@@ -172,56 +172,56 @@ class CompletenessChecker:
 
         for req_id, links in sorted(matrix.items()):
             if not isinstance(links, dict):
-                errors.append(f"{req_id} 的追溯结构错误（应为对象）")
+                errors.append(f"{req_id} traceability structure error (should be an object)")
                 continue
             if req_id not in existing_identifiers["reqs"]:
-                errors.append(f"{req_id} 在 1-reqs 中未找到对应定义")
+                errors.append(f"{req_id} corresponding definition not found in 1-reqs")
 
             adrs = links.get("adrs", [])
             if not isinstance(adrs, list):
-                errors.append(f"{req_id} 的 adrs 字段类型错误（应为列表）")
+                errors.append(f"{req_id} adrs field type error (should be a list)")
             elif not adrs:
-                warnings.append(f"{req_id} 未关联 ADR")
+                warnings.append(f"{req_id} not linked to any ADR")
             else:
                 for adr_id in adrs:
                     if not isinstance(adr_id, str):
-                        errors.append(f"{req_id} 的 adrs 包含非字符串条目")
+                        errors.append(f"{req_id} adrs contains non-string entry")
                         continue
                     if adr_id not in existing_identifiers["adrs"]:
-                        errors.append(f"{req_id} 关联的 ADR 不存在：{adr_id}")
+                        errors.append(f"{req_id} linked ADR does not exist: {adr_id}")
 
             for field, label in self.REQUIRED_LINKS:
                 items = links.get(field, [])
                 if not isinstance(items, list):
-                    errors.append(f"{req_id} 的 {field} 字段类型错误（应为列表）")
+                    errors.append(f"{req_id} {field} field type error (should be a list)")
                 elif not items:
-                    errors.append(f"{req_id} 缺少{label}关联")
+                    errors.append(f"{req_id} missing {label} link")
                 else:
                     for linked_id in items:
                         if not isinstance(linked_id, str):
-                            errors.append(f"{req_id} 的 {field} 包含非字符串条目")
+                            errors.append(f"{req_id} {field} contains non-string entry")
                             continue
                         if field == "implementations":
-                            # 代码实现文件不在 specs 目录下，不执行目录存在性检查
+                            # Implementation files are not under the specs directory, so skip existence check
                             continue
                         if linked_id not in existing_identifiers[field]:
-                            errors.append(f"{req_id} 关联的{label}不存在：{linked_id}")
+                            errors.append(f"{req_id} linked {label} does not exist: {linked_id}")
 
         if warnings:
-            log_warning("完整性检查告警：")
+            log_warning("Completeness check warnings:")
             for item in warnings:
                 log_warning(f"- {item}")
 
         if errors:
-            log_error("完整性检查失败：")
+            log_error("Completeness check failed:")
             for item in errors:
                 log_error(f"- {item}")
             return 1
 
-        log_info("完整性检查通过")
+        log_info("Completeness check passed")
         return 0
 
 
 def check_completeness(specs_dir: Path) -> int:
-    """兼容函数入口：执行追溯完整性检查。"""
+    """Compatibility function entry point: execute traceability completeness check."""
     return CompletenessChecker(specs_dir).running()

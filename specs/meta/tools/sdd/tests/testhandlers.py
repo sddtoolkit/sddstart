@@ -1,4 +1,4 @@
-"""handlers 映射校验测试。"""
+"""Tests for handler mapping validation."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ def _ok(_: argparse.Namespace) -> int:
 
 
 class CommandHandlersTests(unittest.TestCase):
-    """覆盖命令处理映射的完整性校验。"""
+    """Covers integrity validation of command handler mapping."""
 
     def test_build_handler_map_success(self) -> None:
         handlers = {key: _ok for key in REQUIRED_HANDLER_KEYS}

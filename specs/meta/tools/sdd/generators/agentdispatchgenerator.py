@@ -1,49 +1,49 @@
 """
-Agent/Skill 统一调度规则生成与解析。
+Unified Agent/Skill dispatch rule generation and parsing.
 
-## 规范引用
+## Specification Reference
 
-| 规范文档 | 引用编号 | 适用章节 |
+| Specification Document | Reference Number | Applicable Section |
 |----------|----------|----------|
-| Agent权威映射 | agents.md | Agent定义 |
-| Skill权威清单 | skills.md | Skill定义 |
-| 调度契约 | agent-dispatch.json | 调度规则 |
-| Agent协作宪章 | G05 | 统一调度 |
+| Agent Authoritative Mapping | agents.md | Agent Definition |
+| Skill Authoritative List | skills.md | Skill Definition |
+| Dispatch Contract | agent-dispatch.json | Dispatch Rules |
+| Agent Collaboration Charter | G05 | Unified Dispatch |
 
-### agents.md 定义
-- Agent 命名规范：`xxx-agent` 格式
-- Agent 与 Skill 的对应关系
-- Agent 主责阶段定义
+### agents.md Definition
+- Agent naming convention: `xxx-agent` format
+- Correspondence between Agents and Skills
+- Agent primary responsibility stage definition
 
-### skills.md 定义
-- Skill 命名规范：`xxx-skill` 格式
-- Skill 能力描述
-- Skill 使用场景
+### skills.md Definition
+- Skill naming convention: `xxx-skill` format
+- Skill capability description
+- Skill usage scenarios
 
-### agent-dispatch.json 契约
-- 调度载荷结构定义
-- Agent 优先级计算规则
-- 共享 Skill 仲裁规则
+### agent-dispatch.json Contract
+- Dispatch payload structure definition
+- Agent priority calculation rules
+- Shared Skill arbitration rules
 
-### G05-Agent协作宪章 要求
-- 所有工具必须通过 agent-dispatch.json 调度
-- Agent 解析必须基于统一规则
-- 冲突通过 shared_skill_arbitration 仲裁
+### G05-Agent Collaboration Charter Requirements
+- All tools must be dispatched via agent-dispatch.json
+- Agent parsing must be based on unified rules
+- Conflicts are arbitrated via shared_skill_arbitration
 
-## 实现映射
+## Implementation Mapping
 
-| 函数 | 规范要求 | 规范来源 |
+| Function | Specification Requirement | Specification Source |
 |------|----------|----------|
-| `parse_agent_skill_rows()` | 解析Agent映射表 | agents.md |
-| `parse_shared_skill_rules()` | 解析共享Skill规则 | agents.md |
-| `build_agent_dispatch_payload()` | 构建调度载荷 | agent-dispatch.json |
-| `resolve_agent_dispatch()` | 解析任务调度 | G05-统一调度 |
+| `parse_agent_skill_rows()` | Parse Agent mapping table | agents.md |
+| `parse_shared_skill_rules()` | Parse shared Skill rules | agents.md |
+| `build_agent_dispatch_payload()` | Build dispatch payload | agent-dispatch.json |
+| `resolve_agent_dispatch()` | Resolve task dispatch | G05-Unified Dispatch |
 
-参见：
+See:
 - specs/meta/agents/agents.md
 - specs/meta/skills/skills.md
 - specs/meta/index/agent-dispatch.json
-- specs/govs/G05-Agent协作宪章.md
+- specs/govs/G05-Agent Collaboration Charter.md
 """
 
 from __future__ import annotations
@@ -58,15 +58,15 @@ from sdd.io import read_text_safe
 from sdd.utils import extract_md_section
 from sdd.log import log_info, log_warning, log_error
 
-# 规范引用：agents.md - Agent 标识模式
+# Specification Reference: agents.md - Agent identification pattern
 AGENT_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]*-agent")
 
-# 规范引用：skills.md - Skill 标识模式
+# Specification Reference: skills.md - Skill identification pattern
 SKILL_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]*-skill")
 
 
 def _splitting_markdown_row(raw_line: str) -> list[str]:
-    """将 Markdown 表格行切分为单元格列表。"""
+    """Split a Markdown table row into a list of cells."""
     text = raw_line.strip()
     if not (text.startswith("|") and text.endswith("|")):
         return []
@@ -74,37 +74,37 @@ def _splitting_markdown_row(raw_line: str) -> list[str]:
 
 
 def _is_separator_row(cells: list[str]) -> bool:
-    """判断是否为 Markdown 表格分隔行（---）。"""
+    """Determine if a row is a Markdown table separator (---)."""
     if not cells:
         return False
     return all(re.fullmatch(r":?-{3,}:?", cell.replace(" ", "")) is not None for cell in cells)
 
 
 def _extract_skill_ids(text: str) -> list[str]:
-    """从文本中提取所有 skill 标识。"""
+    """Extract all skill identifiers from text."""
     return sorted(set(SKILL_PATTERN.findall(text.lower())))
 
 
 def _extract_agent_ids(text: str) -> list[str]:
-    """从文本中提取所有 agent 标识。"""
+    """Extract all agent identifiers from text."""
     return sorted(set(AGENT_PATTERN.findall(text.lower())))
 
 
 def parse_agent_skill_rows(agents_text: str) -> tuple[list[dict[str, Any]], list[str]]:
-    """解析 `Agent 与 Skill 对应关系` 表格。"""
+    """Parse the 'Agent and Skill Correspondence' table."""
     section_lines = extract_md_section(agents_text, "Agent 与 Skill 对应关系")
     table_lines = [line.strip() for line in section_lines if line.strip().startswith("|")]
 
     if len(table_lines) < 3:
-        return [], ["缺少 Agent 与 Skill 对应关系表格"]
+        return [], ["Missing Agent and Skill correspondence table"]
 
     header = _splitting_markdown_row(table_lines[0])
     if not header:
-        return [], ["Agent 与 Skill 对应关系表头解析失败"]
+        return [], ["Failed to parse Agent and Skill correspondence table header"]
 
     required_columns = {"Agent", "主责阶段", "典型使用 Skill"}
     if not required_columns.issubset(set(header)):
-        return [], [f"Agent 与 Skill 对应关系表头缺少字段：{sorted(required_columns - set(header))}"]
+        return [], [f"Agent and Skill correspondence table is missing fields: {sorted(required_columns - set(header))}"]
 
     rows: list[dict[str, Any]] = []
     issues: list[str] = []
@@ -115,7 +115,7 @@ def parse_agent_skill_rows(agents_text: str) -> tuple[list[dict[str, Any]], list
         if _is_separator_row(cells):
             continue
         if len(cells) != len(header):
-            issues.append(f"Agent 表格列数不一致：{raw_line}")
+            issues.append(f"Inconsistent column count in Agent table: {raw_line}")
             continue
 
         record = dict(zip(header, cells))
@@ -123,13 +123,13 @@ def parse_agent_skill_rows(agents_text: str) -> tuple[list[dict[str, Any]], list
         if not AGENT_PATTERN.fullmatch(agent):
             matched_agents = _extract_agent_ids(agent)
             if not matched_agents:
-                issues.append(f"Agent 名称非法：{record.get('Agent', '')}")
+                issues.append(f"Invalid Agent name: {record.get('Agent', '')}")
                 continue
             agent = matched_agents[0]
 
         skills = _extract_skill_ids(record.get("典型使用 Skill", ""))
         if not skills:
-            issues.append(f"{agent} 未声明可用 Skill")
+            issues.append(f"{agent} has no declared available Skills")
             continue
 
         rows.append(
@@ -142,12 +142,12 @@ def parse_agent_skill_rows(agents_text: str) -> tuple[list[dict[str, Any]], list
         )
 
     if not rows:
-        issues.append("未解析到任何 Agent 行")
+        issues.append("No Agent rows parsed")
     return rows, issues
 
 
 def parse_shared_skill_rules(agents_text: str) -> list[dict[str, Any]]:
-    """解析 `共享 Skill 仲裁规则` 章节。"""
+    """Parse the 'Shared Skill Arbitration Rules' section."""
     section_lines = extract_md_section(agents_text, "共享 Skill 仲裁规则")
     rows: list[dict[str, Any]] = []
     for line in section_lines:
@@ -171,12 +171,12 @@ def parse_shared_skill_rules(agents_text: str) -> list[dict[str, Any]]:
 
 
 def _collect_skill_catalog(specs_dir: Path) -> list[str]:
-    """读取 `meta/skills/` 目录中实际存在的 Skill 文件清单。"""
+    """Read the list of Skill files actually present in the 'meta/skills/' directory."""
     return sorted(path.stem for path in (specs_dir / "meta/skills").glob("*-skill.md"))
 
 
 def build_agent_dispatch_payload(specs_dir: Path) -> tuple[dict[str, Any], list[str], list[str]]:
-    """构建统一调度载荷，并返回 (payload, warnings, errors)。"""
+    """Build the unified dispatch payload and return (payload, warnings, errors)."""
     agents_path = specs_dir / "meta/agents/agents.md"
     skills_path = specs_dir / "meta/skills/skills.md"
 
@@ -184,10 +184,10 @@ def build_agent_dispatch_payload(specs_dir: Path) -> tuple[dict[str, Any], list[
     errors: list[str] = []
 
     if not agents_path.exists():
-        errors.append(f"缺少 Agent 权威映射文档：{agents_path}")
+        errors.append(f"Missing Agent authoritative mapping document: {agents_path}")
         return {}, warnings, errors
     if not skills_path.exists():
-        errors.append(f"缺少 Skill 清单文档：{skills_path}")
+        errors.append(f"Missing Skill list document: {skills_path}")
         return {}, warnings, errors
 
     agents_text = read_text_safe(agents_path)
@@ -205,18 +205,18 @@ def build_agent_dispatch_payload(specs_dir: Path) -> tuple[dict[str, Any], list[
         for skill in row["skills"]:
             skill_owners.setdefault(skill, set()).add(agent)
             if skill not in skill_catalog_set:
-                errors.append(f"Agent 映射引用了不存在的 Skill 文件：{skill}")
+                errors.append(f"Agent mapping refers to a non-existent Skill file: {skill}")
 
     for item in shared_rules:
         skill = item["skill"]
         if skill not in skill_catalog_set:
-            warnings.append(f"共享 Skill 仲裁规则引用了未落盘 Skill：{skill}")
+            warnings.append(f"Shared Skill arbitration rule refers to a non-persisted Skill: {skill}")
         for agent in item["agents"]:
             skill_owners.setdefault(skill, set()).add(agent)
 
     for skill in skill_catalog:
         if skill not in skill_owners:
-            warnings.append(f"Skill 未绑定主责 Agent：{skill}")
+            warnings.append(f"Skill is not bound to a responsible Agent: {skill}")
 
     payload: dict[str, Any] = {
         "meta": {
@@ -240,7 +240,7 @@ def build_agent_dispatch_payload(specs_dir: Path) -> tuple[dict[str, Any], list[
 
 
 def write_agent_dispatch_file(specs_dir: Path) -> tuple[Path, list[str], list[str]]:
-    """写入统一调度规则 JSON 文件。"""
+    """Write the unified dispatch rules JSON file."""
     payload, warnings, errors = build_agent_dispatch_payload(specs_dir)
     target = specs_dir / "meta/index/agent-dispatch.json"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -249,7 +249,7 @@ def write_agent_dispatch_file(specs_dir: Path) -> tuple[Path, list[str], list[st
 
 
 def _matching_stage_score(stage_query: str, stage_text: str) -> int:
-    """计算输入阶段与 Agent 主责阶段文本的匹配分。"""
+    """Calculate the matching score between input stage and Agent's responsible stage text."""
     if not stage_query:
         return 0
 
@@ -297,7 +297,7 @@ KEYWORD_AGENT_MAP: dict[str, str] = {
 
 
 def _normalizing_requested_skills(raw_skills: list[str] | None) -> list[str]:
-    """归一化命令行传入的 skill 列表参数。"""
+    """Normalize the skill list parameters passed from the command line."""
     if not raw_skills:
         return []
     merged = ",".join(raw_skills)
@@ -310,7 +310,7 @@ def resolve_agent_dispatch(
     stage: str | None = None,
     requested_skills: list[str] | None = None,
 ) -> dict[str, Any]:
-    """根据统一映射解析任务调度建议。"""
+    """Resolve task dispatch suggestions based on unified mapping."""
     agents = payload.get("agents", [])
     fallback_agent = payload.get("defaults", {}).get("fallback_agent", "orchestrator-agent")
     skill_owners = payload.get("skill_owners", {})
@@ -333,20 +333,20 @@ def resolve_agent_dispatch(
         stage_score = _matching_stage_score(stage_query, row.get("stage", ""))
         if stage_score > 0:
             score += stage_score
-            why.append(f"阶段匹配 +{stage_score}")
+            why.append(f"Stage match +{stage_score}")
 
         for skill in row.get("skills", []):
             if skill in skill_hints:
                 score += 5
-                why.append(f"Skill 指定 {skill} +5")
+                why.append(f"Skill specified {skill} +5")
             skill_token = skill.removesuffix("-skill").replace("-", " ")
             if skill_token and skill_token in query:
                 score += 2
-                why.append(f"任务命中 Skill 关键词 {skill} +2")
+                why.append(f"Task hit Skill keyword {skill} +2")
 
         if agent in query:
             score += 2
-            why.append("任务显式提及 Agent +2")
+            why.append("Task explicitly mentions Agent +2")
 
         if score > 0:
             scores[agent] = score
@@ -355,12 +355,12 @@ def resolve_agent_dispatch(
     for keyword, mapped_agent in KEYWORD_AGENT_MAP.items():
         if keyword in query and mapped_agent not in scores:
             scores[mapped_agent] = 3
-            reasons[mapped_agent] = [f"关键词匹配 '{keyword}' → {mapped_agent} +3"]
+            reasons[mapped_agent] = [f"Keyword match '{keyword}' → {mapped_agent} +3"]
 
     if not scores:
         primary_agent = fallback_agent
         primary_score = 0
-        primary_reasons = ["未命中显式规则，使用默认 orchestrator 调度"]
+        primary_reasons = ["No explicit rules hit, using default orchestrator dispatch"]
     else:
         ranking = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
         primary_agent, primary_score = ranking[0]

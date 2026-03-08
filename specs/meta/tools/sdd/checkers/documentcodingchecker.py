@@ -1,37 +1,37 @@
 """
-文档编码规范校验器。
+Document coding specification checker.
 
 [SDD Traceability]
-- Standard: S01 (文档编码规范)
+- Standard: S01 (Document Coding Specification)
 
-## 规范引用
+## Specification References
 
-本检查器实现以下规范的校验逻辑：
+This checker implements validation logic for the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 文档编码规范 | S01 | 全文 |
+| Specification Document | Reference ID | Applicable Sections |
+|------------------------|--------------|---------------------|
+| Document Coding Specification | S01 | Full text |
 
-### S01-文档编码规范 要求
-- 编码组成：`<前缀>-<编码段>-<SLUG>.md`
-- 前缀类型：RQ（需求）、DS（设计）、TK（任务）、ADR（决策）、G（治理）、S（标准）
-- 分隔符规范：唯一分隔符 `-`，禁止下划线、空格
-- NN码规则：01-99 或 AA-ZZ（排除 O、I、L）
-- CCC码区间：100-999，按技术层划分
-- 例外文件：README.md、INDEX.md、主文档文件不受规范限制
+### S01 Document Coding Specification Requirements
+- Coding Composition: `<PREFIX>-<CODE_SEGMENT>-<SLUG>.md`
+- Prefix Types: RQ (Requirement), DS (Design), TK (Task), ADR (Decision), G (Governance), S (Standard)
+- Separator Specification: Unique separator `-`, underscores and spaces are prohibited
+- NN Code Rules: 01-99 or AA-ZZ (excluding O, I, L)
+- CCC Code Range: 100-999, divided by technical layers
+- Exempt Files: README.md, INDEX.md, and main document files are not restricted by the specification
 
-## 实现映射
+## Implementation Mapping
 
-| 方法 | 规范要求 | 规范章节 |
-|------|----------|----------|
-| `VALID_PREFIXES` | 六类文档前缀定义 | S01-1.2 编码组成 |
-| `CCC_RANGES` | CCC码分类区间 | S01-5.1 CCC码 |
-| `_check_rq_ds_adr()` | RQ/DS/ADR 格式校验 | S01-3.1~3.4 |
-| `_check_tk()` | TK 格式校验（含YYWW） | S01-3.3 |
-| `_check_gov_std()` | G/S 格式校验 | S01-3.5~3.6 |
-| `extract_reference_id()` | 引用编号提取 | S01-2.1 引用编号定义 |
+| Method | Specification Requirement | Specification Section |
+|--------|---------------------------|-----------------------|
+| `VALID_PREFIXES` | Six document prefix definitions | S01-1.2 Coding Composition |
+| `CCC_RANGES` | CCC code classification ranges | S01-5.1 CCC Code |
+| `_check_rq_ds_adr()` | RQ/DS/ADR format validation | S01-3.1~3.4 |
+| `_check_tk()` | TK format validation (including YYWW) | S01-3.3 |
+| `_check_gov_std()` | G/S format validation | S01-3.5~3.6 |
+| `extract_reference_id()` | Reference ID extraction | S01-2.1 Reference ID Definition |
 
-参见：
+See also:
 - specs/standards/S01-文档编码规范.md
 """
 
@@ -41,47 +41,48 @@ import os
 import re
 from pathlib import Path
 from typing import List, Tuple, Optional
+from sdd.utils import resolve_spec_path
 
 
 class DocumentCodingChecker:
     """
-    文档编码规范校验器。
+    Document coding specification checker.
 
-    规范引用：S01-文档编码规范
+    Specification Reference: S01 Document Coding Specification
 
-    功能：
-    1. 校验六类文档（RQ/DS/TK/ADR/G/S）的编码格式
-    2. 检查引用编号唯一性
-    3. 提供文档定位和重命名功能
-    4. 校验 CCC 码和 NN 码有效性
+    Functions:
+    1. Validate the coding format of six document types (RQ/DS/TK/ADR/G/S)
+    2. Check uniqueness of reference IDs
+    3. Provide document localization and renaming functions
+    4. Validate the effectiveness of CCC and NN codes
 
-    支持的文档类型（S01-3.x）：
-    - RQ: 需求文档，格式 `RQ-<CCC><NN>-<SLUG>需求.md`
-    - DS: 设计文档，格式 `DS-<CCC><NN>-<SLUG>设计.md`
-    - TK: 任务文档，格式 `TK-<CCC><YYWW><NN>-<SLUG>任务.md`
-    - ADR: 决策文档，格式 `ADR-<CCC><NN>-<SLUG>决策.md`
-    - G: 治理文档，格式 `G<NN>-<SLUG>.md`
-    - S: 标准文档，格式 `S<NN>-<SLUG>.md`
+    Supported document types (S01-3.x):
+    - RQ: Requirement document, format `RQ-<CCC><NN>-<SLUG>需求.md`
+    - DS: Design document, format `DS-<CCC><NN>-<SLUG>设计.md`
+    - TK: Task document, format `TK-<CCC><YYWW><NN>-<SLUG>任务.md`
+    - ADR: Decision document, format `ADR-<CCC><NN>-<SLUG>决策.md`
+    - G: Governance document, format `G<NN>-<SLUG>.md`
+    - S: Standard document, format `S<NN>-<SLUG>.md`
     """
 
-    # 规范引用：S01-1.2 编码组成 - 六类文档前缀
+    # Spec Ref: S01-1.2 Coding Composition - Six document prefixes
     VALID_PREFIXES = ['RQ', 'DS', 'TK', 'ADR', 'G', 'S']
 
-    # 规范引用：S01-5.2 NN码 - 排除易混淆字母 O、I、L
+    # Spec Ref: S01-5.2 NN Code - Exclude confusing letters O, I, L
     EXCLUDED_LETTERS = {'O', 'I', 'L'}
-    VALID_LETTERS = set('ABCDEFGHJKMNPQRSTUVWXYZ')  # 23 个可用字母
+    VALID_LETTERS = set('ABCDEFGHJKMNPQRSTUVWXYZ')  # 23 available letters
 
-    # 规范引用：S01-5.1 CCC码分类表
+    # Spec Ref: S01-5.1 CCC Code Classification Table
     CCC_RANGES = {
-        'core': (100, 199),        # 项目核心层
-        'frontend': (200, 299),    # 前端技术层
-        'business': (300, 399),    # 业务领域层
-        'backend': (400, 499),     # 后端技术层
-        'data': (500, 599),        # 数据层
-        'component': (600, 699),   # 组件/工具层
-        'special': (700, 799),     # 专项技术层
-        'reserved': (800, 899),    # 预留扩展
-        'ops': (900, 999),         # 运维支撑层
+        'core': (100, 199),        # Project Core Layer
+        'frontend': (200, 299),    # Frontend Technical Layer
+        'business': (300, 399),    # Business Domain Layer
+        'backend': (400, 499),     # Backend Technical Layer
+        'data': (500, 599),        # Data Layer
+        'component': (600, 699),   # Component/Tool Layer
+        'special': (700, 799),     # Special Technical Layer
+        'reserved': (800, 899),    # Reserved for expansion
+        'ops': (900, 999),         # Ops Support Layer
     }
 
     def __init__(self, specs_dir: str = "specs"):
@@ -91,19 +92,19 @@ class DocumentCodingChecker:
 
     def check_all(self) -> Tuple[bool, List[str], List[str]]:
         """
-        校验所有文档
+        Validate all documents.
 
         Returns:
-            (是否通过，错误列表，警告列表)
+            (passed, errors, warnings)
         """
         self.errors = []
         self.warnings = []
 
-        # 收集所有引用编号，用于唯一性校验
+        # Collect all reference IDs for uniqueness validation
         ref_ids: dict[str, str] = {}
 
         for root, dirs, files in os.walk(self.specs_dir):
-            # 跳过工具目录和测试目录
+            # Skip tools and __pycache__ directories
             if 'tools' in root or '__pycache__' in root:
                 continue
 
@@ -114,20 +115,20 @@ class DocumentCodingChecker:
                 filepath = Path(root) / file
                 rel_path = filepath.relative_to(self.specs_dir)
 
-                # 校验文档编码
+                # Validate document coding
                 is_valid, error = self._check_document(file, rel_path)
 
                 if not is_valid:
                     self.errors.append(f"{rel_path}: {error}")
                     continue
 
-                # 提取引用编号并检查唯一性
+                # Extract reference ID and check for uniqueness
                 ref_id = self.extract_reference_id(file)
                 if ref_id:
                     if ref_id in ref_ids:
                         self.errors.append(
-                            f"{rel_path}: 引用编号重复 '{ref_id}' "
-                            f"(已存在于 {ref_ids[ref_id]})"
+                            f"{rel_path}: Duplicate reference ID '{ref_id}' "
+                            f"(already exists in {ref_ids[ref_id]})"
                         )
                     else:
                         ref_ids[ref_id] = str(rel_path)
@@ -136,17 +137,17 @@ class DocumentCodingChecker:
 
     def _check_document(self, filename: str, rel_path: Path) -> Tuple[bool, Optional[str]]:
         """
-        校验单个文档
+        Validate a single document.
 
         Returns:
-            (是否通过，错误信息)
+            (passed, error_message)
         """
-        # 例外文件：README.md 和 INDEX.md 不受文档编码规范限制
+        # Exemptions: README.md and INDEX.md are not restricted by document coding specs
         if filename in ('README.md', 'INDEX.md'):
             return True, None
 
-        # 主文档例外：允许核心目录下的主文档使用简化命名
-        # 这些是项目基线文档，不强制重命名
+        # Main document exemptions: allow simplified naming for main documents in core directories
+        # These are project baseline documents, no mandatory renaming
         main_doc_exceptions = {
             '1-reqs/requirements.md',
             '2-designs/architecture.md',
@@ -160,14 +161,14 @@ class DocumentCodingChecker:
         if str_path in main_doc_exceptions:
             return True, None
 
-        # 首先解析文件名，判断是否使用 CCC 编码体系
+        # Parse filename first to determine if CCC coding system is used
         parts = filename.replace('.md', '').split('-')
 
-        # 检查是否使用 CCC 编码前缀
+        # Check for CCC coding prefix
         prefix = parts[0] if parts else ""
 
-        # 特殊处理 G 和 S 前缀（如 G01, S01）
-        # 提取前缀类型：G01 → G, S01 → S, RQ-10102 → RQ
+        # Special handling for G and S prefixes (e.g., G01, S01)
+        # Extract prefix type: G01 -> G, S01 -> S, RQ-10102 -> RQ
         if prefix.startswith('G'):
             prefix_type = 'G'
         elif prefix.startswith('S'):
@@ -175,7 +176,7 @@ class DocumentCodingChecker:
         else:
             prefix_type = prefix
 
-        # 检查核心目录是否必须使用规范命名
+        # Check if core directories must use specification naming
         strict_naming_dirs = {
             '1-reqs/': 'RQ',
             '2-designs/': 'DS',
@@ -185,25 +186,25 @@ class DocumentCodingChecker:
         for dir_prefix, expected_doc_prefix in strict_naming_dirs.items():
             if str_path.startswith(dir_prefix):
                 if prefix_type != expected_doc_prefix:
-                    return False, f"目录 '{dir_prefix}' 下的文档必须使用 '{expected_doc_prefix}' 前缀，实际为 '{prefix}'"
+                    return False, f"Documents under directory '{dir_prefix}' must use '{expected_doc_prefix}' prefix, actually '{prefix}'"
 
-        # 如果不是六类文档前缀，使用传统命名检查
+        # Use traditional naming check if not one of the six document prefixes
         if prefix_type not in self.VALID_PREFIXES:
             return self._check_traditional_naming(filename)
 
-        # 使用 CCC 编码体系的文档，进行严格检查
-        # 检查分隔符（只能使用减号）
+        # Strict checks for documents using the CCC coding system
+        # Check separator (only minus sign allowed)
         if '_' in filename:
-            return False, "包含下划线'_'，只允许使用减号'-'"
+            return False, "Contains underscore '_', only hyphens '-' are allowed"
 
-        # 检查空格
+        # Check for spaces
         if ' ' in filename:
-            return False, "包含空格，不允许"
+            return False, "Contains spaces, which are not allowed"
 
         if len(parts) < 2:
-            return False, "格式错误，至少需要前缀和 SLUG"
+            return False, "Format error, at least prefix and SLUG are required"
 
-        # 根据前缀进行专项校验
+        # Specific validation based on prefix
         if prefix_type in ['RQ', 'DS', 'ADR']:
             return self._check_rq_ds_adr(filename, parts)
         elif prefix_type == 'TK':
@@ -214,8 +215,8 @@ class DocumentCodingChecker:
         return True, None
 
     def _check_traditional_naming(self, filename: str) -> Tuple[bool, Optional[str]]:
-        """校验传统命名（非六类文档：templates、examples、agents、skills、tools 等）"""
-        # 特殊允许的特例文件
+        """Validate traditional naming (non-six document types: templates, examples, agents, skills, tools, etc.)."""
+        # Special allowed files
         special_allowed = {
             'README.md', 'CHANGELOG.md', 'index.md', 'sources.md',
             'traceability.md', 'capability-matrix.md', 'agents.md',
@@ -228,159 +229,159 @@ class DocumentCodingChecker:
         if filename in special_allowed or name_without_ext in special_allowed:
             return True, None
 
-        # 模板文件、示例文件使用小写英文、数字、减号、点
+        # Templates and examples use lowercase letters, numbers, hyphens, dots
         if re.match(r'^[a-z0-9\-\.]+\.md$', filename):
-            # 检查禁止的无语义文件名
+            # Check for prohibited non-semantic filenames
             banned_names = {'final', 'new', 'temp', 'tmp', 'draft'}
             if name_without_ext.lower() in banned_names:
-                return False, f"禁止的无语义文件名 '{filename}'"
+                return False, f"Prohibited non-semantic filename '{filename}'"
             return True, None
 
-        # 允许带有 README 的文件
+        # Allow files containing README
         if 'README' in filename:
             return True, None
 
-        return False, "传统命名只允许小写英文、数字、减号、点"
+        return False, "Traditional naming only allows lowercase letters, numbers, hyphens, and dots"
 
     def _check_rq_ds_adr(self, filename: str, parts: List[str]) -> Tuple[bool, Optional[str]]:
         """
-        校验 RQ/DS/ADR 格式：<PREFIX>-<CCC><NN>-<SLUG>后缀.md
-        示例：RQ-10102-用户注册需求.md
+        Validate RQ/DS/ADR format: <PREFIX>-<CCC><NN>-<SLUG><suffix>.md.
+        Example: RQ-10102-用户注册需求.md
         """
         prefix = parts[0]
 
-        # 检查格式：至少 3 段（前缀 - 编码-SLUG...）
+        # Check format: at least 3 segments (prefix - code - SLUG...)
         if len(parts) < 3:
-            return False, f"格式错误，应为 {prefix}-<CCC><NN>-<SLUG>后缀.md"
+            return False, f"Format error, should be {prefix}-<CCC><NN>-<SLUG><suffix>.md"
 
-        # 检查编码段
+        # Check code segment
         code_segment = parts[1]
         if len(code_segment) < 5:
-            return False, f"编码段长度错误，应为 5 位以上，实际{len(code_segment)}位"
+            return False, f"Code segment length error, should be at least 5 digits, actually {len(code_segment)}"
 
-        # 提取 CCC (前 3 位)
+        # Extract CCC (first 3 digits)
         ccc_str = code_segment[:3]
         if not ccc_str.isdigit():
-            return False, f"CCC 码必须是 3 位数字，实际'{ccc_str}'"
+            return False, f"CCC code must be 3 digits, actually '{ccc_str}'"
 
         ccc = int(ccc_str)
         if not (100 <= ccc <= 999):
-            return False, f"CCC 码必须在 100-999 之间，实际{ccc}"
+            return False, f"CCC code must be between 100-999, actually {ccc}"
 
-        # 提取 NN (第 4-5 位)
+        # Extract NN (4th-5th digits)
         nn_str = code_segment[3:5]
         if not self._is_valid_nn(nn_str):
-            return False, f"NN 码格式错误，应为 01-99 或 AA-ZZ(排除 O,I,L)，实际'{nn_str}'"
+            return False, f"NN code format error, should be 01-99 or AA-ZZ (excluding O, I, L), actually '{nn_str}'"
 
-        # 检查 SLUG 非空
+        # Check SLUG is not empty
         slug_parts = parts[2:]
         if not slug_parts or all(not p for p in slug_parts):
-            return False, "SLUG 不能为空"
+            return False, "SLUG cannot be empty"
 
-        # 检查后缀
+        # Check suffix
         suffix_map = {'RQ': '需求', 'DS': '设计', 'ADR': '决策'}
         expected_suffix = suffix_map.get(prefix)
         if expected_suffix and not filename.endswith(f'{expected_suffix}.md'):
-            return False, f"后缀错误，应以'{expected_suffix}.md'结尾"
+            return False, f"Suffix error, should end with '{expected_suffix}.md'"
 
         return True, None
 
     def _check_tk(self, filename: str, parts: List[str]) -> Tuple[bool, Optional[str]]:
         """
-        校验 TK 格式：TK-<CCC><YYWW><NN>-<SLUG>任务.md
-        示例：TK-201260901-前端页面开发任务.md
+        Validate TK format: TK-<CCC><YYWW><NN>-<SLUG>任务.md.
+        Example: TK-201260901-前端页面开发任务.md
         """
         if len(parts) < 3:
-            return False, "格式错误，应为 TK-<CCC><YYWW><NN>-<SLUG>任务.md"
+            return False, "Format error, should be TK-<CCC><YYWW><NN>-<SLUG>任务.md"
 
-        # 检查编码段
+        # Check code segment
         code_segment = parts[1]
         if len(code_segment) < 9:
-            return False, f"编码段长度错误，应为 9 位，实际{len(code_segment)}位"
+            return False, f"Code segment length error, should be 9 digits, actually {len(code_segment)}"
 
-        # 提取 CCC (前 3 位)
+        # Extract CCC (first 3 digits)
         ccc_str = code_segment[:3]
         if not ccc_str.isdigit():
-            return False, f"CCC 码必须是 3 位数字，实际'{ccc_str}'"
+            return False, f"CCC code must be 3 digits, actually '{ccc_str}'"
 
         ccc = int(ccc_str)
         if not (100 <= ccc <= 999):
-            return False, f"CCC 码必须在 100-999 之间，实际{ccc}"
+            return False, f"CCC code must be between 100-999, actually {ccc}"
 
-        # 提取 YYWW (第 4-7 位)
+        # Extract YYWW (4th-7th digits)
         yyww_str = code_segment[3:7]
         if not yyww_str.isdigit():
-            return False, f"YYWW 码必须是 4 位数字，实际'{yyww_str}'"
+            return False, f"YYWW code must be 4 digits, actually '{yyww_str}'"
 
         yy_val = int(yyww_str[:2])  # noqa: F841
         ww = int(yyww_str[2:])
         if not (1 <= ww <= 53):
-            return False, f"周数必须在 01-53 之间，实际{ww}"
+            return False, f"Week number must be between 01-53, actually {ww}"
 
-        # 提取 NN (第 8-9 位)
+        # Extract NN (8th-9th digits)
         nn_str = code_segment[7:9]
         if not self._is_valid_nn(nn_str):
-            return False, f"NN 码格式错误，应为 01-99 或 AA-ZZ(排除 O,I,L)，实际'{nn_str}'"
+            return False, f"NN code format error, should be 01-99 or AA-ZZ (excluding O, I, L), actually '{nn_str}'"
 
-        # 检查后缀
+        # Check suffix
         if not filename.endswith('任务.md'):
-            return False, "后缀错误，应以'任务.md'结尾"
+            return False, "Suffix error, should end with '任务.md'"
 
         return True, None
 
     def _check_gov_std(self, filename: str, parts: List[str]) -> Tuple[bool, Optional[str]]:
         """
-        校验 G/S 格式：<PREFIX><NN>-<SLUG>.md
-        示例：G01-项目宪章.md, S01-文档编码规范.md
+        Validate G/S format: <PREFIX><NN>-<SLUG>.md.
+        Example: G01-项目宪章.md, S01-文档编码规范.md
         """
-        # parts[0] 包含前缀和 NN，如 'G01' 或 'S01'
+        # parts[0] contains prefix and NN, e.g., 'G01' or 'S01'
         prefix_with_nn = parts[0]
 
-        # 提取前缀类型和 NN 码
+        # Extract prefix type and NN code
         if prefix_with_nn.startswith('G'):
             prefix_type = 'G'
-            nn_str = prefix_with_nn[1:]  # G01 → 01
+            nn_str = prefix_with_nn[1:]  # G01 -> 01
         elif prefix_with_nn.startswith('S'):
             prefix_type = 'S'
-            nn_str = prefix_with_nn[1:]  # S01 → 01
+            nn_str = prefix_with_nn[1:]  # S01 -> 01
         else:
-            return False, f"未知的前缀类型：{prefix_with_nn}"
+            return False, f"Unknown prefix type: {prefix_with_nn}"
 
-        # 检查 NN 码
+        # Check NN code
         if not nn_str:
-            return False, f"格式错误，{prefix_type}后面应跟 NN 码"
+            return False, f"Format error, {prefix_type} should be followed by NN code"
 
         if not self._is_valid_nn(nn_str):
-            return False, f"NN 码格式错误，应为 01-99 或 AA-ZZ(排除 O,I,L)，实际'{nn_str}'"
+            return False, f"NN code format error, should be 01-99 or AA-ZZ (excluding O, I, L), actually '{nn_str}'"
 
-        # 检查 SLUG 非空（parts[1] 及之后都是 SLUG）
+        # Check SLUG is not empty (parts[1] and beyond are SLUG)
         if len(parts) < 2:
-            return False, f"格式错误，应为 {prefix_type}<NN>-<SLUG>.md"
+            return False, f"Format error, should be {prefix_type}<NN>-<SLUG>.md"
 
         slug = '-'.join(parts[1:])
         if not slug:
-            return False, "SLUG 不能为空"
+            return False, "SLUG cannot be empty"
 
-        # 检查 SLUG 长度（建议 4-15 个字符）
+        # Check SLUG length (suggested 4-15 characters)
         if len(slug) > 30:
-            self.warnings.append(f"SLUG 过长 ({len(slug)}字符)，建议控制在 15 字以内")
+            self.warnings.append(f"SLUG too long ({len(slug)} characters), suggested to keep within 15 characters")
 
         return True, None
 
     def _is_valid_nn(self, nn_str: str) -> bool:
         """
-        校验 NN 码是否有效
-        格式：01-99 或 AA-ZZ(排除 O,I,L)
+        Check if NN code is valid.
+        Format: 01-99 or AA-ZZ (excluding O, I, L)
         """
         if len(nn_str) != 2:
             return False
 
-        # 数字形式
+        # Numeric form
         if nn_str.isdigit():
             num = int(nn_str)
             return 1 <= num <= 99
 
-        # 字母形式
+        # Letter form
         if nn_str.isalpha() and nn_str.isupper():
             return all(c in self.VALID_LETTERS for c in nn_str)
 
@@ -388,15 +389,15 @@ class DocumentCodingChecker:
 
     def extract_reference_id(self, filename: str) -> Optional[str]:
         """
-        从文件名提取引用编号
+        Extract reference ID from filename.
 
         Returns:
-            引用编号，无法提取返回 None
+            Reference ID, or None if unable to extract.
         """
         if not filename.endswith('.md'):
             return None
 
-        name = filename[:-3]  # 去掉.md
+        name = filename[:-3]  # Remove .md
         parts = name.split('-')
 
         if len(parts) < 2:
@@ -405,95 +406,98 @@ class DocumentCodingChecker:
         prefix = parts[0]
 
         if prefix in ['RQ', 'DS', 'ADR']:
-            # RQ-10102-用户注册需求 → RQ-10102
+            # RQ-10102-用户注册需求 -> RQ-10102
             if len(parts) >= 3 and len(parts[1]) >= 5:
                 return f"{parts[0]}-{parts[1][:5]}"
             return None
         elif prefix == 'TK':
-            # TK-201260901-前端页面开发任务 → TK-201260901
+            # TK-201260901-前端页面开发任务 -> TK-201260901
             if len(parts) >= 3 and len(parts[1]) >= 9:
                 return f"{parts[0]}-{parts[1][:9]}"
             return None
         elif prefix in ['G', 'S']:
-            # G01-项目宪章 → G01
-            # S01-文档编码规范 → S01
+            # G01-项目宪章 -> G01
+            # S01-文档编码规范 -> S01
             if len(parts) >= 2:
-                return f"{parts[0]}-{parts[1]}"
+                # Need to handle the case where prefix and NN are together
+                m = re.match(r'^([GS])([0-9A-Z]{2})', prefix)
+                if m:
+                    return f"{m.group(1)}{m.group(2)}"
             return None
 
         return None
 
     def locate_document(self, ref_id: str) -> Tuple[Optional[Path], Optional[str], List[Path]]:
-        """委托给统一实现定位文档。"""
+        """Delegate document localization to unified implementation."""
         return resolve_spec_path(ref_id)
 
     def validate_ccc(self, ccc: int) -> Tuple[bool, str]:
         """
-        校验 CCC 码并返回分类描述
+        Validate CCC code and return classification description.
 
         Returns:
-            (是否有效，分类描述)
+            (is_valid, classification_description)
         """
         if not (100 <= ccc <= 999):
-            return False, "CCC 码必须在 100-999 之间"
+            return False, "CCC code must be between 100-999"
 
         for category, (start, end) in self.CCC_RANGES.items():
             if start <= ccc <= end:
                 descriptions = {
-                    'core': '项目核心层',
-                    'frontend': '前端技术层',
-                    'business': '业务领域层',
-                    'backend': '后端技术层',
-                    'data': '数据层',
-                    'component': '组件/工具层',
-                    'special': '专项技术层',
-                    'reserved': '预留扩展',
-                    'ops': '运维支撑层',
+                    'core': 'Project Core Layer',
+                    'frontend': 'Frontend Technical Layer',
+                    'business': 'Business Domain Layer',
+                    'backend': 'Backend Technical Layer',
+                    'data': 'Data Layer',
+                    'component': 'Component/Tool Layer',
+                    'special': 'Special Technical Layer',
+                    'reserved': 'Reserved for expansion',
+                    'ops': 'Ops Support Layer',
                 }
-                return True, descriptions.get(category, '未知分类')
+                return True, descriptions.get(category, 'Unknown category')
 
-        return False, "未知分类"
+        return False, "Unknown category"
 
     def suggest_nn(self, ccc: int, existing_docs: List[str]) -> str:
         """
-        建议下一个可用的 NN 码
+        Suggest the next available NN code.
 
         Args:
-            ccc: CCC 分类码
-            existing_docs: 该 CCC 下已存在的文档列表
+            ccc: CCC classification code
+            existing_docs: List of existing documents under this CCC
 
         Returns:
-            建议的 NN 码
+            Suggested NN code.
         """
         used_nns = set()
 
         for doc in existing_docs:
             ref_id = self.extract_reference_id(doc)
             if ref_id:
-                # 提取 NN 部分
+                # Extract NN part
                 parts = ref_id.split('-')
                 if len(parts) >= 2 and len(parts[1]) >= 5:
                     nn = parts[1][3:5] if parts[0] in ['RQ', 'DS', 'ADR'] else parts[1][7:9]
                     used_nns.add(nn)
 
-        # 查找最小的可用 NN
+        # Find the smallest available NN
         for i in range(1, 100):
             nn = f"{i:02d}"
             if nn not in used_nns:
                 return nn
 
-        # 数字用完，使用字母
+        # Digits exhausted, use letters
         for c1 in self.VALID_LETTERS:
             for c2 in self.VALID_LETTERS:
                 nn = c1 + c2
                 if nn not in used_nns:
                     return nn
 
-        return "ZZ"  # 理论上不会到达
+        return "ZZ"  # Theoretically unreachable
 
 
 def main():
-    """命令行入口"""
+    """Command line entry point."""
     import sys
 
     specs_dir = sys.argv[1] if len(sys.argv) > 1 else "specs"
@@ -502,18 +506,18 @@ def main():
     passed, errors, warnings = checker.check_all()
 
     print(f"\n{'='*60}")
-    print("文档编码规范检查结果")
+    print("Document Coding Specification Check Results")
     print(f"{'='*60}")
 
     if passed and not errors:
-        print("✅ 所有文档符合编码规范")
+        print("✅ All documents comply with coding specifications")
     else:
-        print(f"❌ 发现 {len(errors)} 个错误")
+        print(f"❌ Found {len(errors)} errors")
         for error in errors:
             print(f"   - {error}")
 
     if warnings:
-        print(f"\n⚠️ 发现 {len(warnings)} 个警告")
+        print(f"\n⚠️ Found {len(warnings)} warnings")
         for warning in warnings:
             print(f"   - {warning}")
 

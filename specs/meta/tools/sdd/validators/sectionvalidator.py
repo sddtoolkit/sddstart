@@ -1,35 +1,35 @@
 """
-Markdown 章节结构校验公共逻辑。
+Markdown section structure validation common logic.
 
-## 规范引用
+## Specification Reference
 
-本校验器提供通用的章节校验功能，支持以下规范：
+This validator provides common section validation functionality, supporting the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
+| Specification Document | Reference Number | Applicable Section |
 |----------|----------|----------|
-| 文档规范 | S03 | 文档结构 |
-| 质量保证 | S04 | 文档验证 |
+| Document Specification | S03 | Document Structure |
+| Quality Assurance | S04 | Document Verification |
 
-### S03-文档规范 要求
-- 文档必须使用 Markdown 格式
-- 章节标题使用 `##` 二级标题
-- 字段列表使用 `- 字段名: 值` 格式
+### S03-Document Specification Requirements
+- Document must use Markdown format
+- Section titles use `##` H2 headers
+- Field lists use `- Field Name: Value` format
 
-### S04-质量保证 要求
-- 关键字段必须存在且非空
-- 文档验证必须可自动化执行
+### S04-Quality Assurance Requirements
+- Key fields must exist and be non-empty
+- Document verification must be executable automatically
 
-## 实现映射
+## Implementation Mapping
 
-| 函数 | 规范要求 | 规范章节 |
+| Function | Specification Requirement | Specification Section |
 |------|----------|----------|
-| `check_markdown_sections()` | 必需章节校验 | S03-文档结构 |
-| `collecting_bullet_fields()` | 字段列表解析 | S03-字段格式 |
-| `check_required_nonempty_bullets()` | 必需字段非空 | S04-文档验证 |
+| `check_markdown_sections()` | Required section validation | S03-Document Structure |
+| `collecting_bullet_fields()` | Field list parsing | S03-Field Format |
+| `check_required_nonempty_bullets()` | Required fields non-empty | S04-Document Verification |
 
-参见：
-- specs/standards/S03-文档规范.md
-- specs/standards/S04-质量保证.md
+See:
+- specs/standards/S03-Document Specification.md
+- specs/standards/S04-Quality Assurance.md
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ def check_markdown_sections(
     passed_message: str,
     alternative_section_groups: Sequence[Sequence[str]] = (),
 ) -> int:
-    """校验 Markdown 文档必需章节与可选分组章节。"""
+    """Verify Markdown document required sections and optional grouping sections."""
     ok, error_message = check_file_integrity(path, subject)
     if not ok:
         log_error(error_message)
@@ -65,7 +65,7 @@ def check_markdown_sections(
     missing = [section for section in required_sections if section not in text]
     for group in alternative_section_groups:
         if not any(section in text for section in group):
-            missing.append(f"（{' 或 '.join(group)}）")
+            missing.append(f"({' or '.join(group)})")
 
     if missing:
         log_error(missing_sections_message)
@@ -77,14 +77,12 @@ def check_markdown_sections(
     return 0
 
 
-
-
 def check_required_nonempty_bullets(path: Path, section: str, required_labels: Sequence[str]) -> list[str]:
-    """检查章节中给定字段是否存在且值非空。"""
+    """Check if given fields exist and have non-empty values in a section."""
     issues: list[str] = []
     lines = extract_md_section(read_text_safe(path), section)
     if not lines:
-        issues.append(f"缺少章节：{section}")
+        issues.append(f"Missing section: {section}")
         return issues
 
     fields = parse_bullet_list(lines)
@@ -96,21 +94,21 @@ def check_required_nonempty_bullets(path: Path, section: str, required_labels: S
         key = normalize_md_token(required)
         values = field_map.get(key)
         if not values:
-            issues.append(f"{section} 缺少字段：{required}")
+            issues.append(f"{section} missing field: {required}")
             continue
         if not any(value for value in values):
-            issues.append(f"{section} 字段为空：{required}")
+            issues.append(f"{section} field is empty: {required}")
     return issues
 
 
 def check_any_nonempty_prefixed_bullet(path: Path, section: str, prefix: str, display_name: str) -> list[str]:
-    """检查章节中是否至少存在一个给定前缀的非空字段。"""
+    """Check if at least one non-empty field with a given prefix exists in a section."""
     lines = extract_md_section(read_text_safe(path), section)
     if not lines:
-        return [f"缺少章节：{section}"]
+        return [f"Missing section: {section}"]
 
     normalized_prefix = normalize_md_token(prefix)
     for label, value in parse_bullet_list(lines):
         if label.startswith(normalized_prefix) and value:
             return []
-    return [f"{section} 缺少非空字段：{display_name}"]
+    return [f"{section} missing non-empty field: {display_name}"]

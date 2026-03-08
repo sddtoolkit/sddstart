@@ -1,4 +1,4 @@
-"""依赖检查器关键边界测试。"""
+"""Tests for core boundary conditions of the dependency checker."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from sdd.checkers import dependencychecker  # noqa: E402
 
 
 class DependencyCheckerTests(unittest.TestCase):
-    """覆盖 requirements include 深度保护。"""
+    """Covers protection against excessive depth in requirements inclusion."""
 
     def test_requirements_include_depth_limit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -32,7 +32,7 @@ class DependencyCheckerTests(unittest.TestCase):
             warnings: list[str] = []
             entries = dependencychecker._iterate_requirement_entries(root / "req-0.txt", warnings, set())
 
-            self.assertTrue(any("include 嵌套超过最大深度" in warning for warning in warnings))
+            self.assertTrue(any("inclusion nesting exceeds maximum depth" in warning for warning in warnings))
             self.assertEqual(entries, [])
 
 

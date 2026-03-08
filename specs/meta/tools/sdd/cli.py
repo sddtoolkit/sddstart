@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SDD 工具主 CLI，负责命令分发。"""
+"""Main CLI for SDD, responsible for command dispatching."""
 
 from __future__ import annotations
 
@@ -12,15 +12,15 @@ from sdd.utils import resolve_safe_path, validate_semver, validate_slug
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """构建 CLI 参数解析器并注册所有子命令。"""
-    parser = argparse.ArgumentParser(description="SDD 跨平台工具")
+    """Build the CLI argument parser and register all subcommands."""
+    parser = argparse.ArgumentParser(description="SDD Cross-platform Tool")
     subparsers = parser.add_subparsers(dest="command")
     register_commands(subparsers, build_default_handlers())
     return parser
 
 
 def run_main(argv: list[str] | None = None) -> int:
-    """CLI 主入口：解析参数并执行命令。"""
+    """Main entry point for the CLI: parses arguments and executes commands."""
     parser = build_parser()
     args = parser.parse_args(argv)
 

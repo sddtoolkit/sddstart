@@ -1,4 +1,4 @@
-"""req/design validator 行为测试。"""
+"""Tests for req/design validator behavior."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from sdd.validators.reqvalidator import check_requirement_file  # noqa: E402
 
 
 class ValidatorsTests(unittest.TestCase):
-    """覆盖需求与设计文档章节校验。"""
+    """Covers validation of requirement and design document sections."""
 
     def test_requirement_validator_pass_and_fail(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -24,23 +24,23 @@ class ValidatorsTests(unittest.TestCase):
             req_path.write_text(
                 "\n".join(
                     [
-                        "# 需求说明",
-                        "## 元信息",
-                        "- 文档编号：req-baseline-001",
-                        "- 版本：v1.0",
-                        "- 负责人：specifier-agent",
-                        "- 日期：2026-03-02",
-                        "## 目标与范围",
-                        "- 目标：定义模板工程能力边界",
-                        "- 范围：spec 与工具链",
-                        "## 功能需求",
-                        "- FR-1：应支持完整追踪链路",
-                        "## 验收标准",
-                        "- AC-1：追踪矩阵包含 req/design/task/test",
-                        "## 追踪",
-                        "- 关联设计：dsn-baseline-architecture",
-                        "- 关联任务：tsk-baseline-001",
-                        "- 关联测试：test-baseline-001",
+                        "# Requirement Specification",
+                        "## Meta Information",
+                        "- Document ID: req-baseline-001",
+                        "- Version: v1.0",
+                        "- Owner: specifier-agent",
+                        "- Date: 2026-03-02",
+                        "## Goals and Scope",
+                        "- Goal: Define template project capability boundaries",
+                        "- Scope: spec and toolchain",
+                        "## Functional Requirements",
+                        "- FR-1: Should support full traceability",
+                        "## Acceptance Criteria",
+                        "- AC-1: Traceability matrix includes req/design/task/test",
+                        "## Traceability",
+                        "- Related Design: dsn-baseline-architecture",
+                        "- Related Task: tsk-baseline-001",
+                        "- Related Test: test-baseline-001",
                     ]
                 )
                 + "\n",
@@ -49,7 +49,7 @@ class ValidatorsTests(unittest.TestCase):
             self.assertEqual(check_requirement_file(req_path), 0)
 
             req_path.write_text(
-                "# 需求说明\n## 元信息\n- 文档编号：req-baseline-001\n- 版本：\n## 目标与范围\n## 功能需求\n## 验收标准\n## 追踪\n",
+                "# Requirement Specification\n## Meta Information\n- Document ID: req-baseline-001\n- Version: \n## Goals and Scope\n## Functional Requirements\n## Acceptance Criteria\n## Traceability\n",
                 encoding="utf-8",
             )
             self.assertEqual(check_requirement_file(req_path), 1)
@@ -60,25 +60,25 @@ class ValidatorsTests(unittest.TestCase):
             design_path.write_text(
                 "\n".join(
                     [
-                        "# 架构设计",
-                        "## 元信息",
-                        "- 文档编号：dsn-baseline-architecture",
-                        "- 版本：v1.0",
-                        "- 负责人：architect-agent",
-                        "- 日期：2026-03-02",
-                        "## 安全与隐私",
-                        "- 认证与授权：使用仓库权限最小化策略",
-                        "- 数据保护：所有文档 UTF-8 编码",
-                        "## 可靠性与性能",
-                        "- 容量与性能目标：校验命令 5 秒内完成",
-                        "## 追踪",
-                        "- 关联需求：req-baseline-001",
-                        "- 关联任务：tsk-baseline-001",
-                        "## 系统边界",
-                        "- 边界定义：仅处理 specs 目录",
-                        "- 外部依赖：Python 标准库",
-                        "## 接口与契约",
-                        "- 对外接口：python3 specs/meta/tools/sddtool.py <subcommand>",
+                        "# Architecture Design",
+                        "## Meta Information",
+                        "- Document ID: dsn-baseline-architecture",
+                        "- Version: v1.0",
+                        "- Owner: architect-agent",
+                        "- Date: 2026-03-02",
+                        "## Security and Privacy",
+                        "- Auth: Use repository minimum privilege policy",
+                        "- Data Protection: All documents UTF-8 encoded",
+                        "## Reliability and Performance",
+                        "- Performance Goal: Validation command completes within 5 seconds",
+                        "## Traceability",
+                        "- Related Requirement: req-baseline-001",
+                        "- Related Task: tsk-baseline-001",
+                        "## System Boundaries",
+                        "- Boundary Definition: Only process specs directory",
+                        "- External Dependencies: Python standard library",
+                        "## Interfaces and Contracts",
+                        "- External Interface: python3 specs/meta/tools/sddtool.py <subcommand>",
                     ]
                 )
                 + "\n",
@@ -92,11 +92,11 @@ class ValidatorsTests(unittest.TestCase):
             design_path.write_text(
                 "\n".join(
                     [
-                        "# 架构设计",
-                        "## 元信息",
-                        "## 安全与隐私",
-                        "## 可靠性与性能",
-                        "## 追踪",
+                        "# Architecture Design",
+                        "## Meta Information",
+                        "## Security and Privacy",
+                        "## Reliability and Performance",
+                        "## Traceability",
                     ]
                 )
                 + "\n",

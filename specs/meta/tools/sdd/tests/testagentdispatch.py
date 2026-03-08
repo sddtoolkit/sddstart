@@ -1,4 +1,4 @@
-"""Agent/Skill 调度规则生成与解析测试。"""
+"""Tests for Agent/Skill dispatch rule generation and resolution."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from sdd.generators.agentdispatchgenerator import (  # noqa: E402
 
 
 class AgentDispatchTests(unittest.TestCase):
-    """覆盖调度规则构建与路由结果。"""
+    """Covers dispatch rule construction and routing results."""
 
     def test_build_payload_and_resolving(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -32,23 +32,23 @@ class AgentDispatchTests(unittest.TestCase):
             (specs_dir / "meta/agents/agents.md").write_text(
                 "\n".join(
                     [
-                        "# Agent 角色定义",
+                        "# Agent Role Definitions",
                         "",
-                        "## Agent 与 Skill 对应关系",
-                        "| Agent | 主责阶段 | 典型使用 Skill | 责任边界（不负责） |",
+                        "## Agent and Skill Relationships",
+                        "| Agent | Primary Stage | Typical Skills | Responsibility Boundary (Not Responsible For) |",
                         "|---|---|---|---|",
-                        "| orchestrator-agent | 编排与推进 | check-traceability-skill, request-decision-skill | 不替代专业评审 |",
-                        "| specifier-agent | 需求澄清与编写 | clarify-requirements-skill, write-requirements-skill | 不替代实现决策 |",
-                        "| reviewer-agent | 独立审计 | check-traceability-skill | 不替代实施 |",
+                        "| orchestrator-agent | Orchestration and Advancement | check-traceability-skill, request-decision-skill | Does not replace professional review |",
+                        "| specifier-agent | Requirements Clarification and Writing | clarify-requirements-skill, write-requirements-skill | Does not replace implementation decisions |",
+                        "| reviewer-agent | Independent Auditing | check-traceability-skill | Does not replace implementation |",
                         "",
-                        "## 共享 Skill 仲裁规则",
-                        "- `check-traceability-skill`：orchestrator-agent 用于流程推进，reviewer-agent 用于独立审计。",
+                        "## Shared Skill Arbitration Rules",
+                        "- `check-traceability-skill`: orchestrator-agent used for process advancement, reviewer-agent used for independent auditing.",
                     ]
                 )
                 + "\n",
                 encoding="utf-8",
             )
-            (specs_dir / "meta/skills/skills.md").write_text("# Skills 使用清单\n", encoding="utf-8")
+            (specs_dir / "meta/skills/skills.md").write_text("# Skills Usage List\n", encoding="utf-8")
             for name in [
                 "check-traceability-skill.md",
                 "request-decision-skill.md",
@@ -68,8 +68,8 @@ class AgentDispatchTests(unittest.TestCase):
 
             result = resolve_agent_dispatch(
                 payload=payload,
-                task="请先做需求澄清并编写需求文档",
-                stage="需求澄清",
+                task="Please clarify requirements and write requirement documents first",
+                stage="Requirements Clarification",
                 requested_skills=["clarify-requirements-skill"],
             )
             self.assertEqual(result["primary_agent"], "specifier-agent")
@@ -85,18 +85,18 @@ class AgentDispatchTests(unittest.TestCase):
             (specs_dir / "meta/agents/agents.md").write_text(
                 "\n".join(
                     [
-                        "# Agent 角色定义",
+                        "# Agent Role Definitions",
                         "",
-                        "## Agent 与 Skill 对应关系",
-                        "| Agent | 主责阶段 | 典型使用 Skill | 责任边界（不负责） |",
+                        "## Agent and Skill Relationships",
+                        "| Agent | Primary Stage | Typical Skills | Responsibility Boundary (Not Responsible For) |",
                         "|---|---|---|---|",
-                        "| orchestrator-agent | 编排与推进 | request-decision-skill | 不替代专业评审 |",
+                        "| orchestrator-agent | Orchestration and Advancement | request-decision-skill | Does not replace professional review |",
                     ]
                 )
                 + "\n",
                 encoding="utf-8",
             )
-            (specs_dir / "meta/skills/skills.md").write_text("# Skills 使用清单\n", encoding="utf-8")
+            (specs_dir / "meta/skills/skills.md").write_text("# Skills Usage List\n", encoding="utf-8")
             (specs_dir / "meta/skills/request-decision-skill.md").write_text("# request-decision-skill\n", encoding="utf-8")
 
             output_path, warnings, errors = write_agent_dispatch_file(specs_dir)

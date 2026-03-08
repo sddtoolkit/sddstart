@@ -1,9 +1,9 @@
 """
-SDD 基础 IO 工具包。
+SDD Base IO Utility Toolkit.
 
 [SDD Traceability]
-- Policy: G01 (治理与流程)
-- Standard: S03 (文档规范)
+- Policy: G01 (Governance and Process)
+- Standard: S03 (Documentation Standards)
 """
 
 from __future__ import annotations
@@ -14,9 +14,9 @@ from sdd.log import log_warning
 
 def read_text_safe(path: Path) -> str:
     """
-    安全读取文本文件，自动处理编码异常并支持替换模式。
+    Safely read a text file, automatically handling encoding exceptions and supporting replacement mode.
     
-    Spec Ref: S03-1.1 (编码强制要求 UTF-8)
+    Spec Ref: S03-1.1 (Mandatory UTF-8 Encoding)
     """
     try:
         return path.read_text(encoding="utf-8")
@@ -34,9 +34,9 @@ def check_file_integrity(
     empty_template: str = "{subject} is empty: {path}"
 ) -> tuple[bool, str]:
     """
-    检查文件完整性（是否存在且非空）。
+    Check file integrity (whether it exists and is not empty).
     
-    Spec Ref: S04-3.2 (证据完整性校验)
+    Spec Ref: S04-3.2 (Evidence Integrity Verification)
     """
     if not path.exists():
         return False, missing_template.format(subject=subject, path=path)

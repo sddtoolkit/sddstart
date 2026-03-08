@@ -1,35 +1,35 @@
 """
-设计文档校验器，检查关键章节是否齐全。
+Design document validator, checks if key sections are complete.
 
-## 规范引用
+## Specification Reference
 
-本校验器实现以下规范的校验逻辑：
+This validator implements the validation logic for the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
+| Specification Document | Reference Number | Applicable Section |
 |----------|----------|----------|
-| 文档规范 | S03 | 设计文档结构 |
-| 质量保证 | S04 | 设计验证 |
-| 安全规范 | S02-安全 | 安全与隐私 |
+| Document Specification | S03 | Design Document Structure |
+| Quality Assurance | S04 | Design Verification |
+| Security Specification | S02-Security | Security and Privacy |
 
-### S03-文档规范 要求
-- 设计文档必须包含：元信息、系统边界/架构概览、安全与隐私、可靠性与性能、追踪
-- 元信息必须包含：文档编号、版本、负责人、日期
+### S03-Document Specification Requirements
+- Design document must contain: Metadata, System Boundary/Architecture Overview, Security and Privacy, Reliability and Performance, Traceability
+- Metadata must contain: Document ID, Version, Owner, Date
 
-### S04-质量保证 要求
-- 设计必须关联需求（关联需求）
-- 设计必须关联任务（关联任务）
+### S04-Quality Assurance Requirements
+- Design must associate with requirements (Associated Requirements)
+- Design must associate with tasks (Associated Tasks)
 
-## 实现映射
+## Implementation Mapping
 
-| 常量/方法 | 规范要求 | 规范章节 |
+| Constant/Method | Specification Requirement | Specification Section |
 |-----------|----------|----------|
-| `REQUIRED_SECTIONS` | 设计文档必需章节 | S03-设计结构 |
-| `ALTERNATIVE_SECTION_GROUPS` | 可选章节组 | S03-设计结构 |
-| `check_design_file()` | 设计文档校验入口 | S04-设计验证 |
+| `REQUIRED_SECTIONS` | Design document required sections | S03-Design Structure |
+| `ALTERNATIVE_SECTION_GROUPS` | Optional section groups | S03-Design Structure |
+| `check_design_file()` | Design document validation entry point | S04-Design Verification |
 
-参见：
-- specs/standards/S03-文档规范.md
-- specs/standards/S04-质量保证.md
+See:
+- specs/standards/S03-Document Specification.md
+- specs/standards/S04-Quality Assurance.md
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from sdd.validators.sectionvalidator import (
     check_required_nonempty_bullets,
 )
 
-# 规范引用：S03-文档规范 - 设计文档必需章节
+# Specification Reference: S03-Document Specification - Design document required sections
 REQUIRED_SECTIONS = (
     "## 元信息",
     "## 安全与隐私",
@@ -51,7 +51,7 @@ REQUIRED_SECTIONS = (
     "## 追踪",
 )
 
-# 规范引用：S03-文档规范 - 可选章节组（至少包含其一）
+# Specification Reference: S03-Document Specification - Optional section groups (at least one must be present)
 ALTERNATIVE_SECTION_GROUPS = (
     ("## 系统边界", "## 架构概览"),
     ("## 接口列表", "## 接口与契约"),
@@ -60,36 +60,36 @@ ALTERNATIVE_SECTION_GROUPS = (
 
 class DesignValidator:
     """
-    校验单个设计文档结构完整性。
+    Validate the structural integrity of a single design document.
 
-    规范引用：
-    - S03 文档规范：设计文档结构
-    - S04 质量保证：设计验证
+    Specification Reference:
+    - S03 Document Specification: Design Document Structure
+    - S04 Quality Assurance: Design Verification
 
-    检查规则：
-    1. 必需章节：元信息、安全与隐私、可靠性与性能、追踪
-    2. 可选章节组（至少其一）：系统边界/架构概览、接口列表/接口与契约
-    3. 元信息字段：文档编号、版本、负责人、日期
-    4. 系统边界字段：边界定义、外部依赖
-    5. 架构概览字段：系统边界、关键组件
-    6. 接口字段：对外接口
-    7. 安全与隐私字段：认证与授权、数据保护
-    8. 可靠性与性能字段：容量与性能目标
-    9. 追踪字段：关联需求、关联任务
+    Checking Rules:
+    1. Required sections: Metadata, Security and Privacy, Reliability and Performance, Traceability
+    2. Optional section groups (at least one): System Boundary/Architecture Overview, Interface List/Interfaces and Contracts
+    3. Metadata fields: Document ID, Version, Owner, Date
+    4. System Boundary fields: Boundary Definition, External Dependencies
+    5. Architecture Overview fields: System Boundary, Key Components
+    6. Interface fields: External Interfaces
+    7. Security and Privacy fields: Authentication and Authorization, Data Protection
+    8. Reliability and Performance fields: Capacity and Performance Goals
+    9. Traceability fields: Associated Requirements, Associated Tasks
     """
 
     def __init__(self, path: Path) -> None:
-        """初始化设计文档校验器。"""
+        """Initialize design document validator."""
         self.path = path
 
     def running(self) -> int:
-        """执行设计文档校验。"""
+        """Execute design document validation."""
         section_code = check_markdown_sections(
             path=self.path,
-            subject="架构设计",
+            subject="Architecture Design",
             required_sections=REQUIRED_SECTIONS,
-            missing_sections_message="设计文档缺少关键章节：",
-            passed_message="设计文档检查通过",
+            missing_sections_message="Design document is missing key sections:",
+            passed_message="Design document check passed",
             alternative_section_groups=ALTERNATIVE_SECTION_GROUPS,
         )
         if section_code != 0:
@@ -111,7 +111,7 @@ class DesignValidator:
         issues.extend(check_required_nonempty_bullets(self.path, "追踪", ("关联需求", "关联任务")))
 
         if issues:
-            log_error("设计文档存在占位或缺失内容：")
+            log_error("Design document has placeholder or missing content:")
             for issue in issues:
                 log_error(f"- {issue}")
             return 1
@@ -119,5 +119,5 @@ class DesignValidator:
 
 
 def check_design_file(path: Path) -> int:
-    """兼容函数入口：校验设计文档。"""
+    """Compatibility entry point: validate design document."""
     return DesignValidator(path).running()

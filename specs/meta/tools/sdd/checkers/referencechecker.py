@@ -1,39 +1,39 @@
 """
-文档引用关系管理器，提供引用查询、更新、删除和索引维护功能。
+Document reference relationship manager, providing reference query, update, delete, and index maintenance functions.
 
-## 规范引用
+## Specification References
 
-本检查器实现以下规范的校验逻辑：
+This checker implements validation logic for the following specifications:
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 文档编码规范 | S01 | 引用编号规则 |
-| 质量保证 | S04 | 追溯完整性 |
-| 证据规范 | S06 | 证据关联 |
+| Specification Document | Reference ID | Applicable Sections |
+|------------------------|--------------|---------------------|
+| Document Coding Specification | S01 | Reference ID Rules |
+| Quality Assurance | S04 | Traceability Integrity |
+| Evidence Specification | S06 | Evidence Association |
 
-### S01-文档编码规范 要求
-- 引用编号用于文档间的交叉引用
-- 引用编号在整个 specs/ 目录下必须唯一
+### S01 Document Coding Specification Requirements
+- Reference IDs are used for cross-referencing between documents.
+- Reference IDs must be unique across the entire specs/ directory.
 
-### S04-质量保证 要求
-- 追溯链路必须完整且可验证
-- 缺失关联应作为错误报告
+### S04 Quality Assurance Requirements
+- Traceability links must be complete and verifiable.
+- Missing associations should be reported as errors.
 
-### S06-证据规范 要求
-- 证据必须关联到对应任务、变更或发布记录
-- 确保可追溯
+### S06 Evidence Specification Requirements
+- Evidence must be associated with the corresponding task, change, or release record.
+- Ensure traceability.
 
-## 实现映射
+## Implementation Mapping
 
-| 方法 | 规范要求 | 规范章节 |
-|------|----------|----------|
-| `CCC_DOC_PATTERN` | CCC 文档路径匹配 | S01-3.x |
-| `REF_ID_PATTERNS` | 引用编号提取模式 | S01-2.1 |
-| `extract_ref_id_from_filename()` | 引用编号提取 | S01-2.1 |
-| `build_reference_index()` | 构建引用索引 | S04-追溯管理 |
-| `check_orphaned_references()` | 孤立引用检查 | S06-证据关联 |
+| Method | Specification Requirement | Specification Section |
+|--------|---------------------------|-----------------------|
+| `CCC_DOC_PATTERN` | CCC document path matching | S01-3.x |
+| `REF_ID_PATTERNS` | Reference ID extraction patterns | S01-2.1 |
+| `extract_ref_id_from_filename()` | Reference ID extraction | S01-2.1 |
+| `build_reference_index()` | Build reference index | S04 Traceability Management |
+| `check_orphaned_references()` | Orphaned reference check | S06 Evidence Association |
 
-参见：
+See also:
 - specs/standards/S01-文档编码规范.md
 - specs/standards/S04-质量保证.md
 - specs/standards/S06-证据规范.md
@@ -52,51 +52,51 @@ from typing import Dict, List, Tuple, Optional
 @dataclass
 class Reference:
     """
-    引用关系数据类。
+    Reference relationship data class.
 
-    规范引用：S01-2.1 引用编号定义、S06-证据关联
+    Specification Reference: S01-2.1 Reference ID Definition, S06 Evidence Association
 
     Attributes:
-        source_file: 源文件路径（相对specs）
-        source_ref_id: 源文件引用编号（如 G01, S01, RQ-10102）
-        target_file: 目标文件路径（相对specs）
-        target_ref_id: 目标文件引用编号
-        line_number: 引用所在行号
-        context: 引用上下文（整行内容）
-        ref_type: 引用类型（doc/index/code）
+        source_file: Source file path (relative to specs)
+        source_ref_id: Source file reference ID (e.g., G01, S01, RQ-10102)
+        target_file: Target file path (relative to specs)
+        target_ref_id: Target file reference ID
+        line_number: Line number where the reference is located
+        context: Reference context (full line content)
+        ref_type: Reference type (doc/index/code)
     """
-    source_file: str  # 源文件路径（相对specs）
-    source_ref_id: str  # 源文件引用编号（如 G01, S01, RQ-10102）
-    target_file: str  # 目标文件路径（相对specs）
-    target_ref_id: str  # 目标文件引用编号
-    line_number: int  # 引用所在行号
-    context: str  # 引用上下文（整行内容）
-    ref_type: str  # 引用类型：doc（文档引用）、index（索引引用）、code（代码引用）
+    source_file: str  # Source file path (relative to specs)
+    source_ref_id: str  # Source file reference ID (e.g., G01, S01, RQ-10102)
+    target_file: str  # Target file path (relative to specs)
+    target_ref_id: str  # Target file reference ID
+    line_number: int  # Line number where the reference is located
+    context: str  # Reference context (full line content)
+    ref_type: str  # Reference type: doc (document), index (index), code (code)
 
 
 class ReferenceManager:
     """
-    文档引用关系管理器。
+    Document reference relationship manager.
 
-    规范引用：
-    - S01 文档编码规范：引用编号规则
-    - S04 质量保证：追溯完整性
-    - S06 证据规范：证据关联
+    Specification References:
+    - S01 Document Coding Specification: Reference ID Rules
+    - S04 Quality Assurance: Traceability Integrity
+    - S06 Evidence Specification: Evidence Association
 
-    功能：
-    1. 扫描并建立文档间的引用关系
-    2. 构建正向/反向引用索引
-    3. 检查孤立引用（引用不存在的文档）
-    4. 批量更新引用编号
-    5. 生成引用关系报告
+    Functions:
+    1. Scan and establish reference relationships between documents.
+    2. Build forward/reverse reference indices.
+    3. Check for orphaned references (referencing non-existent documents).
+    4. Batch update reference IDs.
+    5. Generate reference relationship reports.
     """
 
-    # 规范引用：S01-3.x - CCC编码文档路径匹配模式
+    # Spec Ref: S01-3.x - CCC encoded document path matching pattern
     CCC_DOC_PATTERN = re.compile(
         r'specs/([a-zA-Z0-9_\-]+)/(RQ-\d{5}|DS-\d{5}|TK-\d{9}|ADR-\d{5}|G\d{2}|S\d{2}|[^\s\'"`)]+\.(?:md|yaml))'
     )
 
-    # 规范引用：S01-2.1 - 引用编号提取模式
+    # Spec Ref: S01-2.1 - Reference ID extraction pattern
     REF_ID_PATTERNS = {
         'RQ': re.compile(r'RQ-(\d{3})(\d{2})'),
         'DS': re.compile(r'DS-(\d{3})(\d{2})'),
@@ -110,14 +110,14 @@ class ReferenceManager:
         self.specs_dir = Path(specs_dir)
         self.index_path = self.specs_dir / "meta/index" / "reference-index.json"
         self.references: List[Reference] = []
-        self._ref_id_cache: Dict[str, str] = {}  # 文件路径 -> 引用编号的缓存
+        self._ref_id_cache: Dict[str, str] = {}  # Cache: file path -> reference ID
     
     def extract_ref_id_from_filename(self, filename: str) -> Optional[str]:
-        """从文件名提取引用编号"""
+        """Extract reference ID from filename."""
         if not filename.endswith('.md'):
             return None
         
-        name = filename[:-3]  # 去掉.md
+        name = filename[:-3]  # Remove .md
         parts = name.split('-')
         
         if len(parts) < 1:
@@ -125,19 +125,19 @@ class ReferenceManager:
         
         prefix = parts[0]
         
-        # RQ-10102-xxx → RQ-10102
+        # RQ-10102-xxx -> RQ-10102
         if prefix in ['RQ', 'DS', 'ADR'] and len(parts) >= 2:
             return f"{prefix}-{parts[1]}"
         
-        # TK-201260901-xxx → TK-201260901
+        # TK-201260901-xxx -> TK-201260901
         if prefix == 'TK' and len(parts) >= 2:
             return f"{prefix}-{parts[1]}"
         
-        # G01-xxx → G01
+        # G01-xxx -> G01
         if prefix.startswith('G') and len(prefix) >= 3:
             return prefix
         
-        # S01-xxx → S01
+        # S01-xxx -> S01
         if prefix.startswith('S') and len(prefix) >= 3:
             return prefix
         
@@ -145,15 +145,15 @@ class ReferenceManager:
     
     def scan_all_references(self) -> List[Reference]:
         """
-        扫描所有文档中的引用关系
+        Scan reference relationships in all documents.
         
         Returns:
-            引用关系列表
+            List of reference relationships.
         """
         self.references = []
         
         for root, _, files in os.walk(self.specs_dir):
-            # 跳过工具和缓存目录
+            # Skip tools and cache directories
             if 'tools' in root or '__pycache__' in root:
                 continue
             
@@ -165,14 +165,14 @@ class ReferenceManager:
                 source_rel = source_path.relative_to(self.specs_dir)
                 source_ref_id = self.extract_ref_id_from_filename(file)
                 
-                # 读取文件内容
+                # Read file content
                 try:
                     with open(source_path, 'r', encoding='utf-8') as f:
                         lines = f.readlines()
                 except Exception:
                     continue
                 
-                # 扫描每一行的引用
+                # Scan each line for references
                 for line_num, line in enumerate(lines, 1):
                     matches = self.CCC_DOC_PATTERN.finditer(line)
                     for match in matches:
@@ -180,7 +180,7 @@ class ReferenceManager:
                         target_file = target_rel.replace('specs/', '')
                         target_ref_id = self.extract_ref_id_from_filename(Path(target_file).name)
                         
-                        # 确定引用类型
+                        # Determine reference type
                         if file.endswith('.py'):
                             ref_type = 'code'
                         elif 'meta/index' in str(source_rel):
@@ -203,19 +203,19 @@ class ReferenceManager:
     
     def build_reference_index(self) -> Dict:
         """
-        构建引用索引数据结构
+        Build the reference index data structure.
         
         Returns:
-            索引字典
+            Index dictionary.
         """
         if not self.references:
             self.scan_all_references()
         
-        # 正向索引：文档 -> 引用的文档
+        # Forward index: document -> referenced documents
         forward_index: Dict[str, List[Dict]] = {}
-        # 反向索引：文档 -> 被哪些文档引用
+        # Reverse index: document -> documents that reference it
         reverse_index: Dict[str, List[Dict]] = {}
-        # 统计信息
+        # Statistical information
         stats = {
             'total_references': len(self.references),
             'total_source_files': len(set(r.source_file for r in self.references)),
@@ -223,7 +223,7 @@ class ReferenceManager:
         }
         
         for ref in self.references:
-            # 正向索引
+            # Forward index
             if ref.source_file not in forward_index:
                 forward_index[ref.source_file] = []
             forward_index[ref.source_file].append({
@@ -234,7 +234,7 @@ class ReferenceManager:
                 'ref_type': ref.ref_type
             })
             
-            # 反向索引
+            # Reverse index
             if ref.target_file not in reverse_index:
                 reverse_index[ref.target_file] = []
             reverse_index[ref.target_file].append({
@@ -248,19 +248,19 @@ class ReferenceManager:
         return {
             'version': '1.0',
             'stats': stats,
-            'forward_index': forward_index,  # 文档引用了谁
-            'reverse_index': reverse_index,  # 文档被谁引用
+            'forward_index': forward_index,  # Who does the document reference?
+            'reverse_index': reverse_index,  # Who references the document?
         }
     
     def save_index(self) -> None:
-        """保存引用索引到文件"""
+        """Save reference index to file."""
         index = self.build_reference_index()
         self.index_path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.index_path, 'w', encoding='utf-8') as f:
             json.dump(index, f, ensure_ascii=False, indent=2)
     
     def load_index(self) -> Dict:
-        """从文件加载引用索引"""
+        """Load reference index from file."""
         if not self.index_path.exists():
             return {}
         with open(self.index_path, 'r', encoding='utf-8') as f:
@@ -268,29 +268,29 @@ class ReferenceManager:
     
     def find_references_to(self, ref_id: str) -> List[Dict]:
         """
-        查询哪些文档引用了指定的文档编号
+        Query which documents reference a specified document ID.
         
         Args:
-            ref_id: 目标文档编号（如 G01, S01, RQ-10102）
+            ref_id: Target document ID (e.g., G01, S01, RQ-10102).
         
         Returns:
-            引用该文档的列表
+            List of documents referencing this document.
         """
         index = self.load_index()
         reverse_index = index.get('reverse_index', {})
         
         results = []
         for target_file, refs in reverse_index.items():
-            # target_file 可能是 "govs/G04" 或 "govs/G04-xxx.md" 格式
-            # 从路径中提取最后一部分
+            # target_file might be in 'govs/G04' or 'govs/G04-xxx.md' format.
+            # Extract the last part from the path.
             target_name = Path(target_file).name
             
-            # 如果target_name不以.md结尾，说明是缩写格式（如G04）
-            # 直接使用target_name作为target_ref_id
+            # If target_name doesn't end with .md, it's an abbreviation (e.g., G04).
+            # Use target_name directly as target_ref_id.
             if '.' not in target_name:
                 target_ref_id = target_name
             else:
-                # 完整文件名，提取引用编号
+                # Full filename, extract reference ID.
                 extracted = self.extract_ref_id_from_filename(target_name)
                 target_ref_id = extracted if extracted else target_name
             
@@ -301,13 +301,13 @@ class ReferenceManager:
     
     def find_references_from(self, ref_id: str) -> List[Dict]:
         """
-        查询指定文档引用了哪些文档
+        Query which documents are referenced by a specified document.
         
         Args:
-            ref_id: 源文档编号
+            ref_id: Source document ID.
         
         Returns:
-            该文档引用的列表
+            List of documents referenced by this document.
         """
         index = self.load_index()
         forward_index = index.get('forward_index', {})
@@ -323,17 +323,17 @@ class ReferenceManager:
     def update_references(self, old_ref_id: str, new_ref_id: str, 
                          dry_run: bool = False) -> Tuple[int, List[str]]:
         """
-        批量更新引用关系（将旧编号替换为新编号）
+        Batch update reference relationships (replace old ID with new ID).
         
         Args:
-            old_ref_id: 旧引用编号
-            new_ref_id: 新引用编号
-            dry_run: 是否仅预览，不实际修改
+            old_ref_id: Old reference ID.
+            new_ref_id: New reference ID.
+            dry_run: Whether to preview only without making changes.
         
         Returns:
-            (更新数量, 更新日志)
+            (Number of updates, Update log).
         """
-        # 首先找到新编号对应的文件
+        # First find the file corresponding to the new ID.
         new_file_pattern = None
         for root, _, files in os.walk(self.specs_dir):
             if 'tools' in root:
@@ -348,22 +348,22 @@ class ReferenceManager:
                 break
         
         if not new_file_pattern:
-            return 0, [f"错误：未找到引用编号 {new_ref_id} 对应的文件"]
+            return 0, [f"Error: file corresponding to reference ID {new_ref_id} not found"]
         
-        # 找到需要更新的引用
+        # Find references to update.
         references_to_update = self.find_references_to(old_ref_id)
         
         if dry_run:
-            log = [f"[预览] 将更新 {len(references_to_update)} 处引用:"]
+            log = [f"[Preview] Will update {len(references_to_update)} references:"]
             for ref in references_to_update:
                 log.append(f"  - {ref['source_file']}:{ref['line_number']}")
             return len(references_to_update), log
         
-        # 实际更新
+        # Actual update.
         updated_count = 0
         log = []
         
-        # 按文件分组
+        # Group by file.
         files_to_update: Dict[str, List[Tuple[int, str, str]]] = {}
         for ref in references_to_update:
             source_file = ref['source_file']
@@ -390,15 +390,15 @@ class ReferenceManager:
                             old_ref_pattern, new_ref_pattern
                         )
                         updated_count += 1
-                        log.append(f"已更新: {source_file}:{line_num}")
+                        log.append(f"Updated: {source_file}:{line_num}")
                 
                 with open(source_path, 'w', encoding='utf-8') as f:
                     f.writelines(lines)
                     
             except Exception as e:
-                log.append(f"错误: {source_file} - {e}")
+                log.append(f"Error: {source_file} - {e}")
         
-        # 更新索引
+        # Update index.
         if updated_count > 0:
             self.scan_all_references()
             self.save_index()
@@ -407,24 +407,24 @@ class ReferenceManager:
     
     def delete_references_to(self, ref_id: str, dry_run: bool = False) -> Tuple[int, List[str]]:
         """
-        删除所有对指定文档的引用（将引用标记为过时）
+        Delete all references to a specified document (mark references as outdated).
         
         Args:
-            ref_id: 要删除引用的文档编号
-            dry_run: 是否仅预览
+            ref_id: Document ID for which references should be deleted.
+            dry_run: Whether to preview only.
         
         Returns:
-            (删除数量, 日志)
+            (Number of deletions, log).
         """
         references_to_delete = self.find_references_to(ref_id)
         
         if dry_run:
-            log = [f"[预览] 将删除 {len(references_to_delete)} 处引用:"]
+            log = [f"[Preview] Will delete {len(references_to_delete)} references:"]
             for ref in references_to_delete:
                 log.append(f"  - {ref['source_file']}:{ref['line_number']}")
             return len(references_to_delete), log
         
-        # 实际删除（标记为过时）
+        # Actual deletion (mark as outdated).
         deleted_count = 0
         log = []
         
@@ -442,17 +442,17 @@ class ReferenceManager:
                     lines = f.readlines()
                 
                 for line_num, context in refs:
-                    # 在行尾添加 [引用已过时] 标记
+                    # Add [Reference Outdated] marker to the end of the line.
                     if '[引用已过时]' not in lines[line_num - 1]:
                         lines[line_num - 1] = lines[line_num - 1].rstrip() + ' [引用已过时]\n'
                         deleted_count += 1
-                        log.append(f"已标记过时: {source_file}:{line_num}")
+                        log.append(f"Marked as outdated: {source_file}:{line_num}")
                 
                 with open(source_path, 'w', encoding='utf-8') as f:
                     f.writelines(lines)
                     
             except Exception as e:
-                log.append(f"错误: {source_file} - {e}")
+                log.append(f"Error: {source_file} - {e}")
         
         if deleted_count > 0:
             self.scan_all_references()
@@ -462,14 +462,14 @@ class ReferenceManager:
     
     def check_orphaned_references(self) -> List[Dict]:
         """
-        检查孤立的引用（引用了不存在的文档）
+        Check for orphaned references (referencing non-existent documents).
         
         Returns:
-            孤立引用列表
+            List of orphaned references.
         """
         orphaned = []
         
-        # 首先建立所有实际文件的映射（用于查找缩写引用）
+        # First establish mapping of all actual files (for lookup of abbreviated references).
         ref_id_to_file: Dict[str, str] = {}
         for root, _, files in os.walk(self.specs_dir):
             if 'tools' in root:
@@ -482,7 +482,7 @@ class ReferenceManager:
                 ref_id = self.extract_ref_id_from_filename(file)
                 if ref_id:
                     ref_id_to_file[ref_id] = str(rel_path)
-                    # 也存储带目录的格式，如 govs/G01
+                    # Also store with directory prefix, e.g., govs/G01.
                     dir_prefix = str(rel_path.parent) if rel_path.parent != Path('.') else ''
                     if dir_prefix:
                         ref_id_to_file[f"{dir_prefix}/{ref_id}"] = str(rel_path)
@@ -508,16 +508,16 @@ class ReferenceManager:
                     target_rel = match.group(0).replace('specs/', '')
                     target_path = self.specs_dir / target_rel
                     
-                    # 检查是否存在（直接路径或缩写映射）
+                    # Check if it exists (direct path or abbreviated mapping).
                     exists = target_path.exists()
                     if not exists:
-                        # 尝试通过ref_id映射查找
+                        # Try finding through ref_id mapping.
                         actual_file = ref_id_to_file.get(target_rel)
                         if actual_file:
                             exists = True
                     
                     if not exists:
-                        # 提取行号
+                        # Extract line number.
                         pos = match.start()
                         line_num = content[:pos].count('\n') + 1
                         
@@ -525,47 +525,47 @@ class ReferenceManager:
                             'source_file': str(source_rel),
                             'target_file': target_rel,
                             'line_number': line_num,
-                            'suggestion': f'创建文件: {target_rel}'
+                            'suggestion': f'Create file: {target_rel}'
                         })
         
         return orphaned
     
     def generate_reference_report(self) -> str:
-        """生成引用关系报告"""
+        """Generate reference relationship report."""
         index = self.load_index()
         stats = index.get('stats', {})
         reverse_index = index.get('reverse_index', {})
         
         lines = [
-            "# 文档引用关系报告",
+            "# Document Reference Relationship Report",
             "",
-            f"生成时间: {__import__('datetime').datetime.now().isoformat()}",
+            f"Generated at: {__import__('datetime').datetime.now().isoformat()}",
             "",
-            "## 统计信息",
+            "## Statistics",
             "",
-            f"- 总引用数: {stats.get('total_references', 0)}",
-            f"- 引用源文件数: {stats.get('total_source_files', 0)}",
-            f"- 被引用目标文件数: {stats.get('total_target_files', 0)}",
+            f"- Total references: {stats.get('total_references', 0)}",
+            f"- Total source files: {stats.get('total_source_files', 0)}",
+            f"- Total target files: {stats.get('total_target_files', 0)}",
             "",
-            "## 被引用最多的文档（Top 10）",
+            "## Most Referenced Documents (Top 10)",
             "",
         ]
         
-        # 统计被引用次数
+        # Count references.
         ref_counts = [(f, len(refs)) for f, refs in reverse_index.items()]
         ref_counts.sort(key=lambda x: x[1], reverse=True)
         
         for target_file, count in ref_counts[:10]:
             target_ref_id = self.extract_ref_id_from_filename(Path(target_file).name)
-            lines.append(f"- `{target_file}` ({target_ref_id or 'N/A'}): {count} 次引用")
+            lines.append(f"- `{target_file}` ({target_ref_id or 'N/A'}): {count} references")
         
         lines.extend([
             "",
-            "## 孤立文档（未被引用的文档）",
+            "## Orphaned Documents (Unreferenced Documents)",
             "",
         ])
         
-        # 找出所有.md文件
+        # Find all .md files.
         all_docs = set()
         referenced_docs = set(reverse_index.keys())
         
@@ -583,14 +583,14 @@ class ReferenceManager:
             for doc in sorted(orphaned_docs):
                 lines.append(f"- `{doc}`")
         else:
-            lines.append("无孤立文档")
+            lines.append("No unreferenced documents found.")
         
         return '\n'.join(lines)
 
 
-# 兼容函数接口
+# Compatibility function interfaces
 def build_reference_index(specs_dir: str = "specs") -> Dict:
-    """构建引用索引"""
+    """Build reference index."""
     manager = ReferenceManager(specs_dir)
     manager.scan_all_references()
     manager.save_index()
@@ -598,45 +598,45 @@ def build_reference_index(specs_dir: str = "specs") -> Dict:
 
 
 def find_references_to(ref_id: str, specs_dir: str = "specs") -> List[Dict]:
-    """查询哪些文档引用了指定编号"""
+    """Query which documents reference a specified ID."""
     manager = ReferenceManager(specs_dir)
     return manager.find_references_to(ref_id)
 
 
 def find_references_from(ref_id: str, specs_dir: str = "specs") -> List[Dict]:
-    """查询指定文档引用了哪些文档"""
+    """Query which documents are referenced by a specified document."""
     manager = ReferenceManager(specs_dir)
     return manager.find_references_from(ref_id)
 
 
 def update_references(old_ref_id: str, new_ref_id: str, 
                      dry_run: bool = False, specs_dir: str = "specs") -> Tuple[int, List[str]]:
-    """批量更新引用"""
+    """Batch update references."""
     manager = ReferenceManager(specs_dir)
     return manager.update_references(old_ref_id, new_ref_id, dry_run)
 
 
 def delete_references_to(ref_id: str, dry_run: bool = False, 
                         specs_dir: str = "specs") -> Tuple[int, List[str]]:
-    """删除引用"""
+    """Delete references."""
     manager = ReferenceManager(specs_dir)
     return manager.delete_references_to(ref_id, dry_run)
 
 
 def check_orphaned_references(specs_dir: str = "specs") -> List[Dict]:
-    """检查孤立引用"""
+    """Check for orphaned references."""
     manager = ReferenceManager(specs_dir)
     return manager.check_orphaned_references()
 
 
 def generate_reference_report(specs_dir: str = "specs") -> str:
-    """生成引用报告"""
+    """Generate reference report."""
     manager = ReferenceManager(specs_dir)
     return manager.generate_reference_report()
 
 
 if __name__ == "__main__":
-    # 测试
+    # Test
     import sys
     
     if len(sys.argv) > 1:
@@ -646,17 +646,17 @@ if __name__ == "__main__":
         if cmd == "build":
             manager.scan_all_references()
             manager.save_index()
-            print(f"引用索引已保存到: {manager.index_path}")
+            print(f"Reference index saved to: {manager.index_path}")
             
         elif cmd == "find-to" and len(sys.argv) > 2:
             refs = manager.find_references_to(sys.argv[2])
-            print(f"引用了 {sys.argv[2]} 的文档:")
+            print(f"Documents referencing {sys.argv[2]}:")
             for ref in refs:
                 print(f"  - {ref['source_file']}:{ref['line_number']}")
                 
         elif cmd == "find-from" and len(sys.argv) > 2:
             refs = manager.find_references_from(sys.argv[2])
-            print(f"{sys.argv[2]} 引用了:")
+            print(f"{sys.argv[2]} references:")
             for ref in refs:
                 print(f"  - {ref['target_file']}")
                 
@@ -665,6 +665,6 @@ if __name__ == "__main__":
             
         elif cmd == "orphaned":
             orphaned = manager.check_orphaned_references()
-            print(f"发现 {len(orphaned)} 个孤立引用:")
+            print(f"Found {len(orphaned)} orphaned references:")
             for item in orphaned:
                 print(f"  - {item['source_file']}:{item['line_number']} -> {item['target_file']}")

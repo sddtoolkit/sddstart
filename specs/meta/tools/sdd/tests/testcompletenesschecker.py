@@ -1,4 +1,4 @@
-"""完整性检查器关键行为测试。"""
+"""Tests for core behavior of the completeness checker."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from sdd.checkers.completenesschecker import check_completeness  # noqa: E402
 
 
 class CompletenessCheckerTests(unittest.TestCase):
-    """覆盖空矩阵与最小有效矩阵行为。"""
+    """Covers behavior for empty matrices and minimum valid matrices."""
 
     def test_empty_matrix_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

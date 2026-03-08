@@ -1,34 +1,34 @@
 """
-变更日志检查器，校验日志文件存在且非空。
+Changelog checker, validating that the log file exists and is not empty.
 
-## 规范引用
+## Specification References
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 版本号规范 | S10 | 变更记录 |
-| 质量保证 | S04 | 变更追踪 |
-| 证据规范 | S06 | 变更证据 |
+| Specification Document | Reference ID | Applicable Sections |
+|------------------------|--------------|---------------------|
+| Versioning Specification | S10          | Change Records      |
+| Quality Assurance      | S04          | Change Tracking     |
+| Evidence Specification | S06          | Change Evidence     |
 
-### S10-版本号规范 要求
-- 变更日志必须记录版本变更
-- 变更日志格式必须符合约定
+### S10 Versioning Specification Requirements
+- Changelog must record version changes.
+- Changelog format must comply with conventions.
 
-### S04-质量保证 要求
-- 变更必须有日志记录
-- 变更日志必须非空
+### S04 Quality Assurance Requirements
+- Changes must be logged.
+- Changelog must not be empty.
 
-### S06-证据规范 要求
-- 变更记录作为证据必须存在
-- 变更记录必须关联到具体变更
+### S06 Evidence Specification Requirements
+- Change records must exist as evidence.
+- Change records must be associated with specific changes.
 
-## 实现映射
+## Implementation Mapping
 
-| 类/方法 | 规范要求 | 规范章节 |
-|---------|----------|----------|
-| `ChangelogChecker` | 变更日志检查器 | S04-变更追踪 |
-| `running()` | 执行变更日志检查 | S10-变更记录 |
+| Class/Method | Specification Requirement | Specification Section |
+|--------------|---------------------------|-----------------------|
+| `ChangelogChecker` | Changelog checker | S04 Change Tracking |
+| `running()` | Execute changelog check | S10 Change Records |
 
-参见：
+See also:
 - specs/standards/S04-质量保证.md
 - specs/standards/S06-证据规范.md
 - specs/standards/S10-版本号规范.md
@@ -44,32 +44,32 @@ from sdd.log import log_error, log_info
 
 class ChangelogChecker:
     """
-    检查变更日志文件有效性。
+    Check the validity of the changelog file.
 
-    规范引用：
-    - S04 质量保证：变更追踪
-    - S06 证据规范：变更证据
-    - S10 版本号规范：变更记录
+    Specification References:
+    - S04 Quality Assurance: Change Tracking
+    - S06 Evidence Specification: Change Evidence
+    - S10 Versioning Specification: Change Records
 
-    功能：
-    1. 检查变更日志文件是否存在
-    2. 检查变更日志文件是否非空
+    Functions:
+    1. Check if the changelog file exists.
+    2. Check if the changelog file is not empty.
     """
 
     def __init__(self, path: Path) -> None:
-        """初始化变更日志检查器。"""
+        """Initialize the changelog checker."""
         self.path = path
 
     def running(self) -> int:
-        """执行变更日志检查。"""
-        ok, error_message = check_file_integrity(self.path, "变更日志")
+        """Execute the changelog check."""
+        ok, error_message = check_file_integrity(self.path, "Changelog")
         if not ok:
             log_error(error_message)
             return 1
-        log_info("变更日志检查通过")
+        log_info("Changelog check passed")
         return 0
 
 
 def check_changelog_file(path: Path) -> int:
-    """兼容函数入口：检查变更日志文件。"""
+    """Compatibility function entry point: check the changelog file."""
     return ChangelogChecker(path).running()

@@ -1,38 +1,38 @@
 """
-命令处理函数映射校验与构建。
+Validation and construction of command handler mappings.
 
-## 规范引用
+## Specification References
 
-| 规范文档 | 引用编号 | 适用章节 |
-|----------|----------|----------|
-| 工具清单与格式 | tool-adapters.json | 命令定义 |
-| Agent协作宪章 | G05 | 工具适配 |
+| Specification Document | Reference ID | Applicable Section |
+|------------------------|--------------|--------------------|
+| Tool List and Format   | tool-adapters.json | Command Definition |
+| Agent Collaboration Charter | G05     | Tool Adaptation    |
 
-### tool-adapters.json 定义
-- 命令处理函数必须与 CLI 子命令一一对应
-- 缺失的处理函数必须报错
+### tool-adapters.json Definition
+- Command handler functions must correspond one-to-one with CLI subcommands.
+- Missing handler functions must raise an error.
 
-### G05-Agent协作宪章 要求
-- 工具命令必须通过统一入口调用
-- 命令处理必须返回标准退出码
+### G05-Agent Collaboration Charter Requirements
+- Tool commands must be called through a unified entry point.
+- Command handling must return standard exit codes.
 
-## 命令清单
+## Command List
 
-| 命令 | 功能 | 规范来源 |
-|------|------|----------|
-| initialize | 初始化 specs 目录 | G01-治理与流程 |
-| generate-index | 生成索引文件 | S04-质量保证 |
-| generate-traceability-matrix | 生成追溯矩阵 | S04-追溯完整性 |
-| generate-agent-dispatch | 生成调度规则 | G05-Agent协作 |
-| generate-tool-adapters | 生成工具适配 | tool-adapters.json |
-| create-* | 创建各类文档 | S01-文档编码 |
-| check-* | 执行各类检查 | S04-质量保证 |
-| locate-document | 定位文档 | S01-引用编号 |
-| trace-dependencies | 追踪依赖 | S06-证据关联 |
+| Command | Function | Spec Source |
+|---------|----------|-------------|
+| initialize | Initialize specs directory | G01-Governance and Process |
+| generate-index | Generate index files | S04-Quality Assurance |
+| generate-traceability-matrix | Generate traceability matrix | S04-Traceability Integrity |
+| generate-agent-dispatch | Generate dispatch rules | G05-Agent Collaboration |
+| generate-tool-adapters | Generate tool adapters | tool-adapters.json |
+| create-* | Create various documents | S01-Document Coding |
+| check-* | Execute various checks | S04-Quality Assurance |
+| locate-document | Locate document | S01-Reference ID |
+| trace-dependencies | Trace dependencies | S06-Evidence Association |
 
-参见：
+See also:
 - specs/meta/index/tool-adapters.json
-- specs/govs/G05-Agent协作宪章.md
+- specs/govs/G05-Agent-Collaboration-Charter.md
 """
 
 from __future__ import annotations
@@ -40,10 +40,10 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable, Mapping
 
-# 命令处理函数类型别名
+# Command handler function type alias
 CommandHandler = Callable[[argparse.Namespace], int]
 
-# 规范引用：tool-adapters.json - 必需的命令处理函数
+# Spec Ref: tool-adapters.json - Required command handler functions
 REQUIRED_HANDLER_KEYS: tuple[str, ...] = (
     "initialize",
     "version",
@@ -91,21 +91,21 @@ REQUIRED_HANDLER_KEYS: tuple[str, ...] = (
 
 def build_handler_map(handlers: Mapping[str, CommandHandler]) -> dict[str, CommandHandler]:
     """
-    校验并返回命令处理函数映射。
+    Validate and return the command handler function mapping.
 
-    规范引用：tool-adapters.json - 命令完整性检查
+    Spec Ref: tool-adapters.json - Command integrity check
 
     Args:
-        handlers: 命令名到处理函数的映射
+        handlers: Mapping of command names to handler functions
 
     Returns:
-        dict[str, CommandHandler]: 校验后的处理函数映射
+        dict[str, CommandHandler]: Validated handler function mapping
 
     Raises:
-        KeyError: 缺失必需的命令处理函数
+        KeyError: Missing required command handler function
     """
     missing = [key for key in REQUIRED_HANDLER_KEYS if key not in handlers]
     if missing:
         missing_text = ", ".join(missing)
-        raise KeyError(f"缺少命令处理函数映射：{missing_text}")
+        raise KeyError(f"Missing command handler function mapping: {missing_text}")
     return dict(handlers)

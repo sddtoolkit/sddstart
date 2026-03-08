@@ -1,4 +1,4 @@
-"""多工具适配清单管理测试。"""
+"""Tests for multi-tool adapter manifest management."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from sdd.generators.tooladaptergenerator import (  # noqa: E402
 
 
 class ToolAdapterTests(unittest.TestCase):
-    """覆盖增删工具与共享入口回收。"""
+    """Covers tool addition/removal and shared entry reclamation."""
 
     def test_remove_last_tool_reclaims_shared_entry(self) -> None:
         manifest = build_default_tool_adapter_manifest()

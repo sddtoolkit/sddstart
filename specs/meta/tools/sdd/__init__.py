@@ -1,4 +1,4 @@
-"""SDD 工具包根模块。"""
+"""SDD tool package root module."""
 
 from __future__ import annotations
 

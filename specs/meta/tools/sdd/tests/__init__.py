@@ -1,1 +1,1 @@
-"""SDD 工具单元测试包。"""
+"""SDD tool unit test package."""
