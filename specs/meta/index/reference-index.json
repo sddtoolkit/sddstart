@@ -1,0 +1,1156 @@
+{
+  "version": "1.0",
+  "stats": {
+    "total_references": 74,
+    "total_source_files": 25,
+    "total_target_files": 29
+  },
+  "forward_index": {
+    "meta/skills/skills.md": [
+      {
+        "target_ref_id": "meta/agents/agents.md",
+        "target_file": "meta/agents/agents.md",
+        "line_number": 57,
+        "context": "- Agent-Skill 权威映射仅维护在 `specs/meta/agents/agents.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/agents/agents.md",
+        "target_file": "meta/agents/agents.md",
+        "line_number": 61,
+        "context": "- 不维护逐项 Agent-Skill 版本兼容矩阵，避免与 `specs/meta/agents/agents.md` 形成双份事实源并引入漂移。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/index/capability-matrix.md": [
+      {
+        "target_ref_id": "meta/index/index.md",
+        "target_file": "meta/index/index.md",
+        "line_number": 14,
+        "context": "- `specs/meta/index/index.md`：由 `python3 specs/meta/tools/sddtool.py generate-index` 自动生成。",
+        "ref_type": "index"
+      },
+      {
+        "target_ref_id": "meta/index/traceability.md",
+        "target_file": "meta/index/traceability.md",
+        "line_number": 15,
+        "context": "- `specs/meta/index/traceability.md` / `traceability.json`：由 `python3 specs/meta/tools/sddtool.py generate-traceability-matrix` 自动生成。",
+        "ref_type": "index"
+      },
+      {
+        "target_ref_id": "meta/index/capability-matrix.md",
+        "target_file": "meta/index/capability-matrix.md",
+        "line_number": 16,
+        "context": "- `specs/meta/index/capability-matrix.md`：人工维护，变更后必须执行 `generate-index` 与 `check-completeness` 防漂移。",
+        "ref_type": "index"
+      }
+    ],
+    "meta/index/reference-report-summary.md": [
+      {
+        "target_ref_id": "meta/index/reference-report.md",
+        "target_file": "meta/index/reference-report.md",
+        "line_number": 104,
+        "context": "报告已保存到: specs/meta/index/reference-report.md",
+        "ref_type": "index"
+      }
+    ],
+    "meta/agents/developer-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/specifier-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 45,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S03",
+        "target_file": "standards/S03",
+        "line_number": 46,
+        "context": "- 需求与设计边界必须遵循 `specs/standards/S03-文档规范.md` 中的“需求与设计边界”章节，避免将实现细节写入需求。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/researcher-agent.md": [
+      {
+        "target_ref_id": "govs/knowledge-sources.yaml",
+        "target_file": "govs/knowledge-sources.yaml",
+        "line_number": 23,
+        "context": "- `specs/govs/knowledge-sources.yaml` 中登记的知识源。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 48,
+        "context": "- 关键结论必须回填 `specs/meta/index/sources.md` 并附版本/日期信息。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/agents.md": [
+      {
+        "target_ref_id": "standards/S06",
+        "target_file": "standards/S06",
+        "line_number": 30,
+        "context": "- 所有 Agent 必须遵守 `specs/standards/S06-证据规范.md` 的证据规则。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/knowledge-sources.yaml",
+        "target_file": "govs/knowledge-sources.yaml",
+        "line_number": 31,
+        "context": "- 外部事实仅可来自 `specs/govs/knowledge-sources.yaml` 登记来源。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 32,
+        "context": "- 所有关键结论必须可回链到 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G04",
+        "target_file": "govs/G04",
+        "line_number": 40,
+        "context": "- Owner 为治理中的人类角色（见 `specs/govs/G04-角色职责.md` 与 `specs/govs/G01-治理与流程.md`），不属于 Agent，不参与 Skill 映射。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 40,
+        "context": "- Owner 为治理中的人类角色（见 `specs/govs/G04-角色职责.md` 与 `specs/govs/G01-治理与流程.md`），不属于 Agent，不参与 Skill 映射。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/skills/skills.md",
+        "target_file": "meta/skills/skills.md",
+        "line_number": 43,
+        "context": "说明：本表为唯一权威映射，`specs/meta/skills/skills.md` 不再维护重复矩阵。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/orchestrator-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 52,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 55,
+        "context": "- 里程碑基线变更须由 planner-agent 提案并经本角色确认；重大调整需按 `specs/govs/G01-治理与流程.md` 升级审批。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/planner-agent.md": [
+      {
+        "target_ref_id": "3-tasks/task-plan.md",
+        "target_file": "3-tasks/task-plan.md",
+        "line_number": 29,
+        "context": "- 更新后的 `specs/3-tasks/task-plan.md` 基线。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/tester-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 42,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/release-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/architect-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 41,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S03",
+        "target_file": "standards/S03",
+        "line_number": 42,
+        "context": "- 设计边界必须遵循 `specs/standards/S03-文档规范.md` 中的“需求与设计边界”章节，不得新增未声明需求的业务语义。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/agents/reviewer-agent.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 48,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "1-reqs/requirements.md": [
+      {
+        "target_ref_id": "standards/S01",
+        "target_file": "standards/S01",
+        "line_number": 44,
+        "context": "- 依赖约束：目录结构与命名必须遵循 `specs/standards/S01-文档编码规范.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S05-交付控制.md": [
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 15,
+        "context": "- 变更分级与审批责任以 `specs/govs/G01-治理与流程.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G03",
+        "target_file": "govs/G03",
+        "line_number": 16,
+        "context": "- 发布放行与门禁以 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S08-可信合规.md": [
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 15,
+        "context": "- 安全治理目标与发布闸门以 `specs/govs/G01-治理与流程.md` 和 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G03",
+        "target_file": "govs/G03",
+        "line_number": 15,
+        "context": "- 安全治理目标与发布闸门以 `specs/govs/G01-治理与流程.md` 和 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S06-证据规范.md": [
+      {
+        "target_ref_id": "govs/knowledge-sources.yaml",
+        "target_file": "govs/knowledge-sources.yaml",
+        "line_number": 19,
+        "context": "- `specs/govs/knowledge-sources.yaml` 中登记并批准的来源。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 34,
+        "context": "- 统一记录到 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S04-质量保证.md": [
+      {
+        "target_ref_id": "govs/G03",
+        "target_file": "govs/G03",
+        "line_number": 16,
+        "context": "- `specs/govs/G03-质量门禁.md` 定义阶段闸门与审批链；本文定义执行质量基线，不替代治理审批。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S06",
+        "target_file": "standards/S06",
+        "line_number": 26,
+        "context": "- 外部事实与关键结论必须满足 `specs/standards/S06-证据规范.md` 的来源分层与可追溯要求。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S07",
+        "target_file": "standards/S07",
+        "line_number": 28,
+        "context": "- 涉及接口或数据模型的变更，必须同步满足 `specs/standards/S07-合约数据设计.md` 的映射和兼容要求。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G03",
+        "target_file": "govs/G03",
+        "line_number": 62,
+        "context": "- 发布放行门禁以 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S08",
+        "target_file": "standards/S08",
+        "line_number": 66,
+        "context": "- 安全与合规：`specs/standards/S08-可信合规.md`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S05",
+        "target_file": "standards/S05",
+        "line_number": 67,
+        "context": "- 交付与变更控制：`specs/standards/S05-交付控制.md`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S09",
+        "target_file": "standards/S09",
+        "line_number": 68,
+        "context": "- 可运行性与韧性：`specs/standards/S09-运营韧性.md`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S02",
+        "target_file": "standards/S02",
+        "line_number": 69,
+        "context": "- 编码约束：`specs/standards/S02-编码规范.md`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S07",
+        "target_file": "standards/S07",
+        "line_number": 70,
+        "context": "- 接口与数据设计：`specs/standards/S07-合约数据设计.md`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S03",
+        "target_file": "standards/S03",
+        "line_number": 71,
+        "context": "- 文档规范与边界：`specs/standards/S03-文档规范.md`",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S02-编码规范.md": [
+      {
+        "target_ref_id": "standards/S08",
+        "target_file": "standards/S08",
+        "line_number": 32,
+        "context": "- 第三方依赖准入、许可、SBOM 与供应链控制以 `specs/standards/S08-可信合规.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S09",
+        "target_file": "standards/S09",
+        "line_number": 36,
+        "context": "- 指标、日志、追踪与告警基线以 `specs/standards/S09-运营韧性.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S07-合约数据设计.md": [
+      {
+        "target_ref_id": "standards/S03",
+        "target_file": "standards/S03",
+        "line_number": 15,
+        "context": "- 需求与设计边界以 `specs/standards/S03-文档规范.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S05",
+        "target_file": "standards/S05",
+        "line_number": 16,
+        "context": "- 发布兼容与回滚要求以 `specs/standards/S05-交付控制.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S08",
+        "target_file": "standards/S08",
+        "line_number": 17,
+        "context": "- 安全、隐私与依赖约束以 `specs/standards/S08-可信合规.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "2-designs/api/*.openapi.yaml",
+        "target_file": "2-designs/api/*.openapi.yaml",
+        "line_number": 44,
+        "context": "- OpenAPI 契约位于 `specs/2-designs/api/*.openapi.yaml`。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S03-文档规范.md": [
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 18,
+        "context": "- 外部事实必须引用来源并登记在 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/traceability.md",
+        "target_file": "meta/index/traceability.md",
+        "line_number": 39,
+        "context": "- 需求、设计、任务、测试必须建立追踪关系并更新 `specs/meta/index/traceability.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S01-文档编码规范.md": [
+      {
+        "target_ref_id": "1-reqs/README.md",
+        "target_file": "1-reqs/README.md",
+        "line_number": 342,
+        "context": "| `README.md` | 目录说明文件 | `specs/1-reqs/README.md`、`specs/2-designs/api/README.md` |",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "2-designs/api/README.md",
+        "target_file": "2-designs/api/README.md",
+        "line_number": 342,
+        "context": "| `README.md` | 目录说明文件 | `specs/1-reqs/README.md`、`specs/2-designs/api/README.md` |",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "2-designs/INDEX.md",
+        "target_file": "2-designs/INDEX.md",
+        "line_number": 343,
+        "context": "| `INDEX.md` | 目录索引文件 | `specs/2-designs/INDEX.md` |",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "1-reqs/RQ-10102",
+        "target_file": "1-reqs/RQ-10102",
+        "line_number": 487,
+        "context": "print(path)  # 输出: specs/1-reqs/RQ-10102-用户注册需求.md",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 494,
+        "context": "print(path)  # 输出: specs/govs/G01-治理与流程.md",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "1-reqs/RQ-10102",
+        "target_file": "1-reqs/RQ-10102",
+        "line_number": 502,
+        "context": "# 输出: specs/1-reqs/RQ-10102-用户注册需求.md",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 505,
+        "context": "# 输出: specs/govs/G01-治理与流程.md",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S01",
+        "target_file": "standards/S01",
+        "line_number": 508,
+        "context": "# 输出: specs/standards/S01-文档编码规范.md",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S10-版本号规范.md": [
+      {
+        "target_ref_id": "meta/agents/agents.md",
+        "target_file": "meta/agents/agents.md",
+        "line_number": 46,
+        "context": "**定义位置**：`specs/meta/agents/agents.md` 及各 Agent 细则文件",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/skills/skills.md",
+        "target_file": "meta/skills/skills.md",
+        "line_number": 70,
+        "context": "**定义位置**：`specs/meta/skills/skills.md` 及各 Skill 细则文件",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/tools/tools.md",
+        "target_file": "meta/tools/tools.md",
+        "line_number": 89,
+        "context": "**定义位置**：`specs/meta/tools/tools.md`、`specs/meta/index/tool-adapters.json`",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "changelogs/CHANGELOG.md",
+        "target_file": "changelogs/CHANGELOG.md",
+        "line_number": 207,
+        "context": "| 整体变更 | `specs/changelogs/CHANGELOG.md` |",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G02-项目宪章.md": [
+      {
+        "target_ref_id": "govs/G04",
+        "target_file": "govs/G04",
+        "line_number": 28,
+        "context": "- 完整角色清单与职责边界详见 `specs/govs/G04-角色职责.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G01-治理与流程.md": [
+      {
+        "target_ref_id": "govs/G04",
+        "target_file": "govs/G04",
+        "line_number": 26,
+        "context": "- 角色细则与 RACI 见 `specs/govs/G04-角色职责.md`；Agent 与 Skill 映射以 `specs/meta/agents/agents.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/agents/agents.md",
+        "target_file": "meta/agents/agents.md",
+        "line_number": 26,
+        "context": "- 角色细则与 RACI 见 `specs/govs/G04-角色职责.md`；Agent 与 Skill 映射以 `specs/meta/agents/agents.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "standards/S05",
+        "target_file": "standards/S05",
+        "line_number": 49,
+        "context": "- 执行侧要求与操作清单以 `specs/standards/S05-交付控制.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "meta/index/sources.md",
+        "target_file": "meta/index/sources.md",
+        "line_number": 140,
+        "context": "- 证据闸门：外部事实必须记录在 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G01",
+        "target_file": "govs/G01",
+        "line_number": 149,
+        "context": "- `specs/govs/G01-治理与流程.md`：治理总览（含变更控制、评审审计、安全治理、政策生命周期）。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G02",
+        "target_file": "govs/G02",
+        "line_number": 150,
+        "context": "- `specs/govs/G02-项目宪章.md`：项目目标、范围与成功标准。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G04",
+        "target_file": "govs/G04",
+        "line_number": 151,
+        "context": "- `specs/govs/G04-角色职责.md`：角色职责与操作权限矩阵。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G03",
+        "target_file": "govs/G03",
+        "line_number": 152,
+        "context": "- `specs/govs/G03-质量门禁.md`：分阶段质量门禁与检查清单。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/G05",
+        "target_file": "govs/G05",
+        "line_number": 153,
+        "context": "- `specs/govs/G05-Agent协作宪章.md`：Agent 协作边界与冲突处理。",
+        "ref_type": "doc"
+      },
+      {
+        "target_ref_id": "govs/knowledge-sources.yaml",
+        "target_file": "govs/knowledge-sources.yaml",
+        "line_number": 154,
+        "context": "- `specs/govs/knowledge-sources.yaml`：可用知识源白名单与约束规则。",
+        "ref_type": "doc"
+      }
+    ]
+  },
+  "reverse_index": {
+    "meta/agents/agents.md": [
+      {
+        "source_ref_id": "meta/skills/skills.md",
+        "source_file": "meta/skills/skills.md",
+        "line_number": 57,
+        "context": "- Agent-Skill 权威映射仅维护在 `specs/meta/agents/agents.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/skills/skills.md",
+        "source_file": "meta/skills/skills.md",
+        "line_number": 61,
+        "context": "- 不维护逐项 Agent-Skill 版本兼容矩阵，避免与 `specs/meta/agents/agents.md` 形成双份事实源并引入漂移。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S10",
+        "source_file": "standards/S10-版本号规范.md",
+        "line_number": 46,
+        "context": "**定义位置**：`specs/meta/agents/agents.md` 及各 Agent 细则文件",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 26,
+        "context": "- 角色细则与 RACI 见 `specs/govs/G04-角色职责.md`；Agent 与 Skill 映射以 `specs/meta/agents/agents.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/index/index.md": [
+      {
+        "source_ref_id": "meta/index/capability-matrix.md",
+        "source_file": "meta/index/capability-matrix.md",
+        "line_number": 14,
+        "context": "- `specs/meta/index/index.md`：由 `python3 specs/meta/tools/sddtool.py generate-index` 自动生成。",
+        "ref_type": "index"
+      }
+    ],
+    "meta/index/traceability.md": [
+      {
+        "source_ref_id": "meta/index/capability-matrix.md",
+        "source_file": "meta/index/capability-matrix.md",
+        "line_number": 15,
+        "context": "- `specs/meta/index/traceability.md` / `traceability.json`：由 `python3 specs/meta/tools/sddtool.py generate-traceability-matrix` 自动生成。",
+        "ref_type": "index"
+      },
+      {
+        "source_ref_id": "S03",
+        "source_file": "standards/S03-文档规范.md",
+        "line_number": 39,
+        "context": "- 需求、设计、任务、测试必须建立追踪关系并更新 `specs/meta/index/traceability.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/index/capability-matrix.md": [
+      {
+        "source_ref_id": "meta/index/capability-matrix.md",
+        "source_file": "meta/index/capability-matrix.md",
+        "line_number": 16,
+        "context": "- `specs/meta/index/capability-matrix.md`：人工维护，变更后必须执行 `generate-index` 与 `check-completeness` 防漂移。",
+        "ref_type": "index"
+      }
+    ],
+    "meta/index/reference-report.md": [
+      {
+        "source_ref_id": "meta/index/reference-report-summary.md",
+        "source_file": "meta/index/reference-report-summary.md",
+        "line_number": 104,
+        "context": "报告已保存到: specs/meta/index/reference-report.md",
+        "ref_type": "index"
+      }
+    ],
+    "meta/index/sources.md": [
+      {
+        "source_ref_id": "meta/agents/developer-agent.md",
+        "source_file": "meta/agents/developer-agent.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/specifier-agent.md",
+        "source_file": "meta/agents/specifier-agent.md",
+        "line_number": 45,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/researcher-agent.md",
+        "source_file": "meta/agents/researcher-agent.md",
+        "line_number": 48,
+        "context": "- 关键结论必须回填 `specs/meta/index/sources.md` 并附版本/日期信息。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 32,
+        "context": "- 所有关键结论必须可回链到 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/orchestrator-agent.md",
+        "source_file": "meta/agents/orchestrator-agent.md",
+        "line_number": 52,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/planner-agent.md",
+        "source_file": "meta/agents/planner-agent.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/tester-agent.md",
+        "source_file": "meta/agents/tester-agent.md",
+        "line_number": 42,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/release-agent.md",
+        "source_file": "meta/agents/release-agent.md",
+        "line_number": 43,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/architect-agent.md",
+        "source_file": "meta/agents/architect-agent.md",
+        "line_number": 41,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/reviewer-agent.md",
+        "source_file": "meta/agents/reviewer-agent.md",
+        "line_number": 48,
+        "context": "- 禁止将模型记忆作为唯一事实来源；外部事实必须来自已登记来源并回填 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S06",
+        "source_file": "standards/S06-证据规范.md",
+        "line_number": 34,
+        "context": "- 统一记录到 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S03",
+        "source_file": "standards/S03-文档规范.md",
+        "line_number": 18,
+        "context": "- 外部事实必须引用来源并登记在 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 140,
+        "context": "- 证据闸门：外部事实必须记录在 `specs/meta/index/sources.md`。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S03": [
+      {
+        "source_ref_id": "meta/agents/specifier-agent.md",
+        "source_file": "meta/agents/specifier-agent.md",
+        "line_number": 46,
+        "context": "- 需求与设计边界必须遵循 `specs/standards/S03-文档规范.md` 中的“需求与设计边界”章节，避免将实现细节写入需求。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/architect-agent.md",
+        "source_file": "meta/agents/architect-agent.md",
+        "line_number": 42,
+        "context": "- 设计边界必须遵循 `specs/standards/S03-文档规范.md` 中的“需求与设计边界”章节，不得新增未声明需求的业务语义。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 71,
+        "context": "- 文档规范与边界：`specs/standards/S03-文档规范.md`",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S07",
+        "source_file": "standards/S07-合约数据设计.md",
+        "line_number": 15,
+        "context": "- 需求与设计边界以 `specs/standards/S03-文档规范.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/knowledge-sources.yaml": [
+      {
+        "source_ref_id": "meta/agents/researcher-agent.md",
+        "source_file": "meta/agents/researcher-agent.md",
+        "line_number": 23,
+        "context": "- `specs/govs/knowledge-sources.yaml` 中登记的知识源。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 31,
+        "context": "- 外部事实仅可来自 `specs/govs/knowledge-sources.yaml` 登记来源。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S06",
+        "source_file": "standards/S06-证据规范.md",
+        "line_number": 19,
+        "context": "- `specs/govs/knowledge-sources.yaml` 中登记并批准的来源。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 154,
+        "context": "- `specs/govs/knowledge-sources.yaml`：可用知识源白名单与约束规则。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S06": [
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 30,
+        "context": "- 所有 Agent 必须遵守 `specs/standards/S06-证据规范.md` 的证据规则。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 26,
+        "context": "- 外部事实与关键结论必须满足 `specs/standards/S06-证据规范.md` 的来源分层与可追溯要求。",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G04": [
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 40,
+        "context": "- Owner 为治理中的人类角色（见 `specs/govs/G04-角色职责.md` 与 `specs/govs/G01-治理与流程.md`），不属于 Agent，不参与 Skill 映射。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G02",
+        "source_file": "govs/G02-项目宪章.md",
+        "line_number": 28,
+        "context": "- 完整角色清单与职责边界详见 `specs/govs/G04-角色职责.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 26,
+        "context": "- 角色细则与 RACI 见 `specs/govs/G04-角色职责.md`；Agent 与 Skill 映射以 `specs/meta/agents/agents.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 151,
+        "context": "- `specs/govs/G04-角色职责.md`：角色职责与操作权限矩阵。",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G01": [
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 40,
+        "context": "- Owner 为治理中的人类角色（见 `specs/govs/G04-角色职责.md` 与 `specs/govs/G01-治理与流程.md`），不属于 Agent，不参与 Skill 映射。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "meta/agents/orchestrator-agent.md",
+        "source_file": "meta/agents/orchestrator-agent.md",
+        "line_number": 55,
+        "context": "- 里程碑基线变更须由 planner-agent 提案并经本角色确认；重大调整需按 `specs/govs/G01-治理与流程.md` 升级审批。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S05",
+        "source_file": "standards/S05-交付控制.md",
+        "line_number": 15,
+        "context": "- 变更分级与审批责任以 `specs/govs/G01-治理与流程.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S08",
+        "source_file": "standards/S08-可信合规.md",
+        "line_number": 15,
+        "context": "- 安全治理目标与发布闸门以 `specs/govs/G01-治理与流程.md` 和 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 494,
+        "context": "print(path)  # 输出: specs/govs/G01-治理与流程.md",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 505,
+        "context": "# 输出: specs/govs/G01-治理与流程.md",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 149,
+        "context": "- `specs/govs/G01-治理与流程.md`：治理总览（含变更控制、评审审计、安全治理、政策生命周期）。",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/skills/skills.md": [
+      {
+        "source_ref_id": "meta/agents/agents.md",
+        "source_file": "meta/agents/agents.md",
+        "line_number": 43,
+        "context": "说明：本表为唯一权威映射，`specs/meta/skills/skills.md` 不再维护重复矩阵。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S10",
+        "source_file": "standards/S10-版本号规范.md",
+        "line_number": 70,
+        "context": "**定义位置**：`specs/meta/skills/skills.md` 及各 Skill 细则文件",
+        "ref_type": "doc"
+      }
+    ],
+    "3-tasks/task-plan.md": [
+      {
+        "source_ref_id": "meta/agents/planner-agent.md",
+        "source_file": "meta/agents/planner-agent.md",
+        "line_number": 29,
+        "context": "- 更新后的 `specs/3-tasks/task-plan.md` 基线。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S01": [
+      {
+        "source_ref_id": "1-reqs/requirements.md",
+        "source_file": "1-reqs/requirements.md",
+        "line_number": 44,
+        "context": "- 依赖约束：目录结构与命名必须遵循 `specs/standards/S01-文档编码规范.md`。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 508,
+        "context": "# 输出: specs/standards/S01-文档编码规范.md",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G03": [
+      {
+        "source_ref_id": "S05",
+        "source_file": "standards/S05-交付控制.md",
+        "line_number": 16,
+        "context": "- 发布放行与门禁以 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S08",
+        "source_file": "standards/S08-可信合规.md",
+        "line_number": 15,
+        "context": "- 安全治理目标与发布闸门以 `specs/govs/G01-治理与流程.md` 和 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 16,
+        "context": "- `specs/govs/G03-质量门禁.md` 定义阶段闸门与审批链；本文定义执行质量基线，不替代治理审批。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 62,
+        "context": "- 发布放行门禁以 `specs/govs/G03-质量门禁.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 152,
+        "context": "- `specs/govs/G03-质量门禁.md`：分阶段质量门禁与检查清单。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S07": [
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 28,
+        "context": "- 涉及接口或数据模型的变更，必须同步满足 `specs/standards/S07-合约数据设计.md` 的映射和兼容要求。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 70,
+        "context": "- 接口与数据设计：`specs/standards/S07-合约数据设计.md`",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S08": [
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 66,
+        "context": "- 安全与合规：`specs/standards/S08-可信合规.md`",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S02",
+        "source_file": "standards/S02-编码规范.md",
+        "line_number": 32,
+        "context": "- 第三方依赖准入、许可、SBOM 与供应链控制以 `specs/standards/S08-可信合规.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S07",
+        "source_file": "standards/S07-合约数据设计.md",
+        "line_number": 17,
+        "context": "- 安全、隐私与依赖约束以 `specs/standards/S08-可信合规.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S05": [
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 67,
+        "context": "- 交付与变更控制：`specs/standards/S05-交付控制.md`",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S07",
+        "source_file": "standards/S07-合约数据设计.md",
+        "line_number": 16,
+        "context": "- 发布兼容与回滚要求以 `specs/standards/S05-交付控制.md` 为准。",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 49,
+        "context": "- 执行侧要求与操作清单以 `specs/standards/S05-交付控制.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S09": [
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 68,
+        "context": "- 可运行性与韧性：`specs/standards/S09-运营韧性.md`",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S02",
+        "source_file": "standards/S02-编码规范.md",
+        "line_number": 36,
+        "context": "- 指标、日志、追踪与告警基线以 `specs/standards/S09-运营韧性.md` 为准。",
+        "ref_type": "doc"
+      }
+    ],
+    "standards/S02": [
+      {
+        "source_ref_id": "S04",
+        "source_file": "standards/S04-质量保证.md",
+        "line_number": 69,
+        "context": "- 编码约束：`specs/standards/S02-编码规范.md`",
+        "ref_type": "doc"
+      }
+    ],
+    "2-designs/api/*.openapi.yaml": [
+      {
+        "source_ref_id": "S07",
+        "source_file": "standards/S07-合约数据设计.md",
+        "line_number": 44,
+        "context": "- OpenAPI 契约位于 `specs/2-designs/api/*.openapi.yaml`。",
+        "ref_type": "doc"
+      }
+    ],
+    "1-reqs/README.md": [
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 342,
+        "context": "| `README.md` | 目录说明文件 | `specs/1-reqs/README.md`、`specs/2-designs/api/README.md` |",
+        "ref_type": "doc"
+      }
+    ],
+    "2-designs/api/README.md": [
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 342,
+        "context": "| `README.md` | 目录说明文件 | `specs/1-reqs/README.md`、`specs/2-designs/api/README.md` |",
+        "ref_type": "doc"
+      }
+    ],
+    "2-designs/INDEX.md": [
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 343,
+        "context": "| `INDEX.md` | 目录索引文件 | `specs/2-designs/INDEX.md` |",
+        "ref_type": "doc"
+      }
+    ],
+    "1-reqs/RQ-10102": [
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 487,
+        "context": "print(path)  # 输出: specs/1-reqs/RQ-10102-用户注册需求.md",
+        "ref_type": "doc"
+      },
+      {
+        "source_ref_id": "S01",
+        "source_file": "standards/S01-文档编码规范.md",
+        "line_number": 502,
+        "context": "# 输出: specs/1-reqs/RQ-10102-用户注册需求.md",
+        "ref_type": "doc"
+      }
+    ],
+    "meta/tools/tools.md": [
+      {
+        "source_ref_id": "S10",
+        "source_file": "standards/S10-版本号规范.md",
+        "line_number": 89,
+        "context": "**定义位置**：`specs/meta/tools/tools.md`、`specs/meta/index/tool-adapters.json`",
+        "ref_type": "doc"
+      }
+    ],
+    "changelogs/CHANGELOG.md": [
+      {
+        "source_ref_id": "S10",
+        "source_file": "standards/S10-版本号规范.md",
+        "line_number": 207,
+        "context": "| 整体变更 | `specs/changelogs/CHANGELOG.md` |",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G02": [
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 150,
+        "context": "- `specs/govs/G02-项目宪章.md`：项目目标、范围与成功标准。",
+        "ref_type": "doc"
+      }
+    ],
+    "govs/G05": [
+      {
+        "source_ref_id": "G01",
+        "source_file": "govs/G01-治理与流程.md",
+        "line_number": 153,
+        "context": "- `specs/govs/G05-Agent协作宪章.md`：Agent 协作边界与冲突处理。",
+        "ref_type": "doc"
+      }
+    ]
+  }
+}

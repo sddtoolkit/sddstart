@@ -1,0 +1,42 @@
+knowledge_sources:
+  - name: "context7-docs"
+    url: "https://context7.com/"
+    last_verified: "2026-03-02"
+    scope:
+      - "技术选型"
+      - "架构决策"
+
+  - name: "project-docs"
+    url: "specs/meta/index/sources.md"
+    last_verified: "2026-03-02"
+    scope:
+      - "业务规则"
+      - "历史决策"
+
+  - name: "python-docs"
+    url: "https://docs.python.org/3/"
+    last_verified: "2026-03-02"
+    scope:
+      - "Python 标准库"
+      - "语言行为与版本差异"
+
+  - name: "rfc-editor"
+    url: "https://www.rfc-editor.org/"
+    last_verified: "2026-03-02"
+    scope:
+      - "IETF 标准"
+      - "协议与规范定义"
+
+  - name: "github-docs"
+    url: "https://docs.github.com/"
+    last_verified: "2026-03-02"
+    scope:
+      - "GitHub 平台能力"
+      - "CI/CD 与仓库治理"
+
+constraints:
+  - rule: "adr-must-reference-sources"
+    enforcement: "reviewer-check"
+
+  - rule: "no-model-memory-as-sole-source"
+    enforcement: "source-citation-required"

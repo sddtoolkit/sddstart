@@ -1,0 +1,17 @@
+{
+  "REQ-BASELINE-001": {
+    "adrs": [
+      "ADR-20260302-BASELINE-GOVERNANCE"
+    ],
+    "designs": [
+      "DSN-BASELINE-ARCHITECTURE"
+    ],
+    "tasks": [
+      "TSK-BASELINE-001"
+    ],
+    "tests": [
+      "TEST-BASELINE-001"
+    ],
+    "implementations": []
+  }
+}

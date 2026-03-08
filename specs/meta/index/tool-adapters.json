@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "schema": "sdd.tool-adapters.v1",
+    "created_at": "2026-03-03T02:11:07.655946+00:00",
+    "updated_at": "2026-03-05T09:52:17.360561+00:00"
+  },
+  "entries": [
+    {
+      "entry_id": "entry-agents-md",
+      "path": "AGENTS.md",
+      "format": "markdown",
+      "shared": true,
+      "tools": [
+        "codex",
+        "kimi-code",
+        "kiro",
+        "opencode"
+      ]
+    },
+    {
+      "entry_id": "entry-claude-md",
+      "path": "CLAUDE.md",
+      "format": "markdown",
+      "shared": false,
+      "tools": [
+        "claude-code"
+      ]
+    },
+    {
+      "entry_id": "entry-crush-md",
+      "path": "CRUSH.md",
+      "format": "markdown",
+      "shared": false,
+      "tools": [
+        "crush"
+      ]
+    },
+    {
+      "entry_id": "entry-crush-init",
+      "path": ".crush/init",
+      "format": "crush-init",
+      "shared": false,
+      "tools": [
+        "crush"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "tool_id": "codex",
+      "display_name": "Codex",
+      "enabled": true,
+      "entry_ids": [
+        "entry-agents-md"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "markdown-entry + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    },
+    {
+      "tool_id": "kiro",
+      "display_name": "Kiro",
+      "enabled": true,
+      "entry_ids": [
+        "entry-agents-md"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "shared-markdown-entry + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    },
+    {
+      "tool_id": "claude-code",
+      "display_name": "Claude Code",
+      "enabled": true,
+      "entry_ids": [
+        "entry-claude-md"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "markdown-entry + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    },
+    {
+      "tool_id": "crush",
+      "display_name": "Crush",
+      "enabled": true,
+      "entry_ids": [
+        "entry-crush-md",
+        "entry-crush-init"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "markdown-entry + init-script + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    },
+    {
+      "tool_id": "kimi-code",
+      "display_name": "Kimi Code",
+      "enabled": true,
+      "entry_ids": [
+        "entry-agents-md"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "shared-markdown-entry + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    },
+    {
+      "tool_id": "opencode",
+      "display_name": "OpenCode",
+      "enabled": true,
+      "entry_ids": [
+        "entry-agents-md"
+      ],
+      "agent_definition": "specs/meta/agents/agents.md",
+      "skill_definition": "specs/meta/skills/skills.md",
+      "definition_format": "shared-markdown-entry + dispatch-json",
+      "dispatch_contract": "specs/meta/index/agent-dispatch.json",
+      "dispatch_resolver": "python3 specs/meta/tools/sddtool.py resolve-agent-dispatch --task \"<task>\" --json"
+    }
+  ]
+}

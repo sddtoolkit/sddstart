@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "schema": "sdd.agent-dispatch.v1",
+    "generated_at": "2026-03-07T19:38:46.400039+00:00",
+    "source": {
+      "agents": "specs/meta/agents/agents.md",
+      "skills": "specs/meta/skills/skills.md"
+    }
+  },
+  "agents": [
+    {
+      "agent": "orchestrator-agent",
+      "stage": "编排与推进",
+      "skills": [
+        "check-traceability-skill",
+        "request-decision-skill"
+      ],
+      "not_responsible": "不替代专业评审与领域决策"
+    },
+    {
+      "agent": "specifier-agent",
+      "stage": "需求澄清与编写",
+      "skills": [
+        "clarify-requirements-skill",
+        "write-requirements-skill"
+      ],
+      "not_responsible": "不替代架构设计与实现决策"
+    },
+    {
+      "agent": "researcher-agent",
+      "stage": "证据检索与核验",
+      "skills": [
+        "fetch-knowledge-skill"
+      ],
+      "not_responsible": "不替代需求审批与架构定案"
+    },
+    {
+      "agent": "architect-agent",
+      "stage": "方案评估与设计",
+      "skills": [
+        "analyze-options-skill",
+        "draft-adr-skill",
+        "generate-design-skill"
+      ],
+      "not_responsible": "不替代发布审批"
+    },
+    {
+      "agent": "planner-agent",
+      "stage": "任务规划与依赖管理",
+      "skills": [
+        "analyze-change-impact-skill",
+        "decompose-tasks-skill",
+        "estimate-effort-skill"
+      ],
+      "not_responsible": "不替代跨阶段编排与最终放行"
+    },
+    {
+      "agent": "developer-agent",
+      "stage": "实现与回填",
+      "skills": [
+        "generate-code-skill",
+        "generate-unit-test-skill",
+        "run-validation-skill"
+      ],
+      "not_responsible": "不替代独立质量评审"
+    },
+    {
+      "agent": "tester-agent",
+      "stage": "验证与质量结论",
+      "skills": [
+        "generate-acceptance-test-skill",
+        "run-validation-skill"
+      ],
+      "not_responsible": "不替代需求定义与架构决策"
+    },
+    {
+      "agent": "release-agent",
+      "stage": "发布执行与归档",
+      "skills": [
+        "analyze-change-impact-skill",
+        "generate-changelog-release-skill",
+        "maintain-runbook-skill"
+      ],
+      "not_responsible": "不替代放行审批与业务范围决策"
+    },
+    {
+      "agent": "reviewer-agent",
+      "stage": "独立评审与审计",
+      "skills": [
+        "analyze-options-skill",
+        "check-traceability-skill",
+        "security-compliance-review-skill",
+        "sync-spec-code-skill"
+      ],
+      "not_responsible": "不替代实施执行"
+    }
+  ],
+  "skill_catalog": [
+    "analyze-change-impact-skill",
+    "analyze-options-skill",
+    "check-traceability-skill",
+    "clarify-requirements-skill",
+    "decompose-tasks-skill",
+    "draft-adr-skill",
+    "estimate-effort-skill",
+    "fetch-knowledge-skill",
+    "generate-acceptance-test-skill",
+    "generate-changelog-release-skill",
+    "generate-code-skill",
+    "generate-design-skill",
+    "generate-unit-test-skill",
+    "maintain-runbook-skill",
+    "request-decision-skill",
+    "run-validation-skill",
+    "security-compliance-review-skill",
+    "sync-spec-code-skill",
+    "write-requirements-skill"
+  ],
+  "skill_owners": {
+    "analyze-change-impact-skill": [
+      "orchestrator-agent",
+      "planner-agent",
+      "release-agent"
+    ],
+    "analyze-options-skill": [
+      "architect-agent",
+      "orchestrator-agent",
+      "reviewer-agent"
+    ],
+    "check-traceability-skill": [
+      "orchestrator-agent",
+      "reviewer-agent"
+    ],
+    "clarify-requirements-skill": [
+      "specifier-agent"
+    ],
+    "decompose-tasks-skill": [
+      "planner-agent"
+    ],
+    "draft-adr-skill": [
+      "architect-agent"
+    ],
+    "estimate-effort-skill": [
+      "planner-agent"
+    ],
+    "fetch-knowledge-skill": [
+      "researcher-agent"
+    ],
+    "generate-acceptance-test-skill": [
+      "tester-agent"
+    ],
+    "generate-changelog-release-skill": [
+      "release-agent"
+    ],
+    "generate-code-skill": [
+      "developer-agent"
+    ],
+    "generate-design-skill": [
+      "architect-agent"
+    ],
+    "generate-unit-test-skill": [
+      "developer-agent"
+    ],
+    "maintain-runbook-skill": [
+      "release-agent"
+    ],
+    "request-decision-skill": [
+      "orchestrator-agent"
+    ],
+    "run-validation-skill": [
+      "developer-agent",
+      "reviewer-agent",
+      "tester-agent"
+    ],
+    "security-compliance-review-skill": [
+      "reviewer-agent"
+    ],
+    "sync-spec-code-skill": [
+      "reviewer-agent"
+    ],
+    "write-requirements-skill": [
+      "specifier-agent"
+    ]
+  },
+  "shared_skill_arbitration": [
+    {
+      "skill": "check-traceability-skill",
+      "agents": [
+        "orchestrator-agent",
+        "reviewer-agent"
+      ],
+      "rule": "`check-traceability-skill`：orchestrator-agent 用于流程推进与断链预警，reviewer-agent 用于独立审计；如结论冲突，以 reviewer-agent 审计结论为准。"
+    },
+    {
+      "skill": "run-validation-skill",
+      "agents": [
+        "developer-agent",
+        "reviewer-agent",
+        "tester-agent"
+      ],
+      "rule": "`run-validation-skill`：developer-agent 仅用于自检，不构成门禁放行依据；tester-agent 负责门禁校验主结论，阻断与否由 tester-agent 提交 reviewer-agent 决策。"
+    },
+    {
+      "skill": "analyze-options-skill",
+      "agents": [
+        "architect-agent",
+        "orchestrator-agent",
+        "reviewer-agent"
+      ],
+      "rule": "`analyze-options-skill`：architect-agent 负责方案评估主结论，reviewer-agent 在复核场景可复用该 Skill；结论冲突时由 orchestrator-agent 组织复核，重大分歧升级 Owner 决策。"
+    },
+    {
+      "skill": "analyze-change-impact-skill",
+      "agents": [
+        "orchestrator-agent",
+        "planner-agent",
+        "release-agent"
+      ],
+      "rule": "`analyze-change-impact-skill`：planner-agent 负责计划基线影响评估，release-agent 负责发布窗口影响评估；如结论冲突，由 orchestrator-agent 组织复核，必要时升级 Owner。"
+    },
+    {
+      "skill": "request-decision-skill",
+      "agents": [
+        "orchestrator-agent"
+      ],
+      "rule": "`request-decision-skill`：默认由 orchestrator-agent 发起；其他 Agent 遇到越权或证据不足时，应通过 orchestrator-agent 路由触发该 Skill。"
+    }
+  ],
+  "defaults": {
+    "fallback_agent": "orchestrator-agent",
+    "decision_skill": "request-decision-skill"
+  }
+}

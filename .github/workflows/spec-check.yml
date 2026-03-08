@@ -1,0 +1,31 @@
+name: Spec Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run spec checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 specs/meta/tools/sddtool.py generating-index
+          python3 specs/meta/tools/sddtool.py generating-traceability-matrix
+          python3 specs/meta/tools/sddtool.py checking-status
+          python3 specs/meta/tools/sddtool.py checking-governance
+          python3 specs/meta/tools/sddtool.py checking-dependencies
+          python3 specs/meta/tools/sddtool.py checking-code-quality
+          python3 specs/meta/tools/sddtool.py checking-completeness
+          python3 specs/meta/tools/sddtool.py validating-requirement
+          python3 specs/meta/tools/sddtool.py validating-design
+          python3 specs/meta/tools/sddtool.py checking-changelog
+          python3 specs/meta/tools/sddtool.py checking-naming
+          python3 specs/meta/tools/sddtool.py checking-drift
